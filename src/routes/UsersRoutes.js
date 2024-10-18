@@ -21,6 +21,8 @@ users_controllers.delete("/users/delete", UsersDelete)
 users_controllers.get("/users/auth", UserAuth)
 users_controllers.get("/hello", (req, res) => {
  res.send("Hello World")
+users_controllers.get("/lorem",(req,res)=>{
+    res.send("Lorem ipsum dolor sit amet...")
 })
 
 
