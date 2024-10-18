@@ -19,6 +19,9 @@ users_controllers.post("/users/read", UsersRead)
 users_controllers.put("/users/update/:id", UsersUpdate)
 users_controllers.delete("/users/delete", UsersDelete)
 users_controllers.get("/users/auth", UserAuth)
+users_controllers.get("/lorem",(req,res)=>{
+    res.send("Lorem ipsum dolor sit amet...")
+})
 
 
 export default users_controllers
