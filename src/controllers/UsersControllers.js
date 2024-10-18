@@ -57,7 +57,7 @@ export const UsersCreate = async (req = request, res = response) => {
 
   const token = await jwt.sign(
    {
-    app_name: "proba_inzynierki",
+    app_name: "inzynierka",
     id: createUsers.iduser,
     email: createUsers.email,
     username: createUsers.username,
@@ -105,7 +105,7 @@ export const UsersLogin = async (req = request, res = response) => {
 
   const token = await jwt.sign(
    {
-    app_name: "proba_inzynierki",
+    app_name: "inzynierka",
     id: Usercheck.iduser,
     email: Usercheck.email,
    },
