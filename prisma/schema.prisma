@@ -115,7 +115,7 @@ model user {
   zipcode        String  @db.VarChar(45)
   street         String  @db.VarChar(45)
   FK_idcity      Int
-  password       String  @db.VarChar(45)
+  password       String  @db.VarChar(256)
 
   @@id([iduser, FK_iduser_type, FK_idcity])
 }

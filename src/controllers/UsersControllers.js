@@ -24,13 +24,12 @@ export const UsersCreate = async (req = request, res = response) => {
     FK_idcity,
     password
   } = await req.body
-
-  const checkUniqueEmail = await UsersModels.findUnique({
-   where: {
-    email: email,
-   },
-  })
-
+  const checkUniqueEmail = await UsersModels.findFirst({
+    where: {
+      email: email,  // Finds the first user with this email
+    },
+  });
+  
 
   if (checkUniqueEmail) {
    return res.status(401).json({
@@ -38,6 +37,7 @@ export const UsersCreate = async (req = request, res = response) => {
     msg: "email already exist",
    })
   }
+
 
   const createUsers = await UsersModels.create({
    data: {

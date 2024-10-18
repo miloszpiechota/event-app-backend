@@ -7,7 +7,8 @@ env.config()
 
 const app = express()
 const PORT = process.env.PORT;
-const users_controllers = express.Router()
+// const users_controllers = express.Router()
+import users_controllers from "./routes/UsersRoutes"
 
 import { rateLimit } from "express-rate-limit"
 
