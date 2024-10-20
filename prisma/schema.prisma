@@ -1,126 +1,139 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+    provider = "mysql"
+    url      = env("DATABASE_URL")
 }
 
-model cities {
-  idcity       Int
-  city         String @db.VarChar(45)
-  FK_idcountry Int
-
-  @@id([idcity, FK_idcountry])
+model Cities {
+    idcity                  Int                 @id @default(autoincrement())
+    city                    String              @db.VarChar(100)
+    idcountry               Int  
+    country                 Countries           @relation(fields: [idcountry], references: [idcountry])
+    event_locations         Event_locations[]    
+    users                   Users[]
 }
 
-model comments {
-  idcomment    Int      @id
-  FK_idevent   Int
-  FK_iduser    Int
-  comment      String   @db.VarChar(512)
-  date_comment DateTime @db.Date
+model Countries {
+    idcountry               Int                 @id @default(autoincrement()) 
+    name_country            String              @db.VarChar(100)
+    cities                  Cities[]
 }
 
-model country {
-  idcountry    Int    @id @unique(map: "idcountry_UNIQUE")
-  name_country String @db.VarChar(45)
+model Comments {
+    idcomment               Int                 @id @default(autoincrement()) 
+    idevent                 Int
+    iduser                  Int
+    comment                 String              @db.VarChar(512)
+    date_comment            DateTime            @db.Date
+    event                   Events              @relation(fields: [idevent], references: [idevent])
+    user                    Users               @relation(fields: [iduser], references: [iduser])
 }
 
-model event {
-  idevent             Int       @unique(map: "id_event_UNIQUE")
-  name                String    @db.VarChar(45)
-  start_date          DateTime  @db.DateTime(0)
-  end_date            DateTime? @db.DateTime(0)
-  description         String?   @db.VarChar(45)
-  number_of_ticket    Int
-  photo               Bytes?    @db.Blob
-  contact_info        String    @db.VarChar(45)
-  FK_idevent_category Int
-  FK_idlocation       Int
-  status              Int       @db.TinyInt
-
-  @@id([idevent, FK_idlocation])
+model Events {
+    idevent                 Int                 @id @default(autoincrement())
+    name                    String              @db.VarChar(100)
+    start_date              DateTime            @db.DateTime(0)
+    end_date                DateTime?           @db.DateTime(0)
+    description             String?             @db.VarChar(1024)
+    number_of_ticket        Int
+    photo                   Bytes?              @db.Blob
+    contact_info            String              @db.VarChar(256)
+    idevent_category        Int
+    idevent_location        Int
+    status                  Int                 @db.TinyInt
+    event_category          Event_categories    @relation(fields: [idevent_category], references: [idevent_category])
+    event_location          Event_locations     @relation(fields: [idevent_location], references: [idevent_location])
+    event_tickets           Event_tickets[]
+    comments                Comments[]
+    favourite_events        Favourite_events[]
 }
 
-model event_category {
-  idevent_category Int    @id
-  category_type    String @db.VarChar(45)
+model Event_categories {
+    idevent_category        Int                 @id @default(autoincrement())
+    category_type           String              @db.VarChar(100)
+    events                  Events[]
 }
 
-model event_locations {
-  id_event_location Int
-  name              String @db.VarChar(45)
-  FK_idcity         Int
+model Event_locations {
+    idevent_location        Int                 @id @default(autoincrement())
+    name                    String              @db.VarChar(100)
+    idcity                  Int                 
+    city                    Cities              @relation(fields:[idcity], references: [idcity])
+    events                  Events[]
 
-  @@id([id_event_location, FK_idcity])
 }
 
-model event_ticket {
-  idevent_ticket Int
-  name           String?  @db.VarChar(45)
-  price          Float    @db.Float
-  start_date     DateTime @db.DateTime(0)
-  end_date       DateTime @db.DateTime(0)
-  FK_idevent     Int
-
-  @@id([idevent_ticket, FK_idevent])
+model Event_tickets {
+    idevent_ticket          Int                 @id @default(autoincrement())
+    name                    String?             @db.VarChar(100)
+    price                   Float               @db.Float
+    start_date              DateTime            @db.DateTime(0)
+    end_date                DateTime            @db.DateTime(0)
+    idevent                 Int
+    event                   Events              @relation(fields: [idevent], references: [idevent])
+    order_tickets           Order_tickets[]
 }
 
-model favourite_event {
-  idfavourite_event Int
-  FK_idevent        Int
-  FK_iduser         Int
-
-  @@id([idfavourite_event, FK_idevent])
+model Favourite_events {
+    idfavourite_event       Int                 @id @default(autoincrement())
+    idevent                 Int
+    iduser                  Int
+    event                   Events              @relation(fields: [idevent], references: [idevent])
+    user                    Users               @relation(fields: [iduser], references: [iduser])
 }
 
-model order {
-  idorder          Int
-  data             DateTime @db.Date
-  total_amount     Float    @db.Float
-  total_tax_amount Float    @db.Float
-  FK_iduser        Int
-
-  @@id([idorder, FK_iduser])
+model Orders {
+    idorder                 Int                 @id @default(autoincrement())
+    data                    DateTime            @db.Date
+    total_amount            Float               @db.Float
+    total_tax_amount        Float               @db.Float
+    iduser                  Int
+    user                    Users               @relation(fields: [iduser], references: [iduser])
+    order_tickets           Order_tickets[]
+    payments                Payments[]
 }
 
-model order_ticket {
-  idorder_ticket     Int
-  FK_idevent_ticket  Int
-  FK_idorder         Int
-  FK_idticket_status Int
-
-  @@id([idorder_ticket, FK_idevent_ticket, FK_idorder, FK_idticket_status])
+model Order_tickets {
+    idorder_ticket          Int                 @id @default(autoincrement())
+    idevent_ticket          Int
+    idorder                 Int
+    ticket_status           String
+    event_ticket            Event_tickets       @relation(fields: [idevent_ticket], references: [idevent_ticket])
+    order                   Orders              @relation(fields: [idorder], references: [idorder])
 }
 
-model payment {
-  idpayment            Int
-  FK_idorder           Int
-  FK_idpayment_methods Int
-  FK_idpayment_status  Int
-
-  @@id([idpayment, FK_idorder, FK_idpayment_methods, FK_idpayment_status])
+model Payments {
+    idpayment               Int                 @id @default(autoincrement())
+    idorder                 Int
+    payment_methods         String
+    payment_status          String
+    order                   Orders              @relation(fields: [idorder], references: [idorder])
 }
 
-model user {
-  iduser         Int     @default(autoincrement())
-  name           String  @db.VarChar(45)
-  second_name    String? @db.VarChar(45)
-  surname        String  @db.VarChar(45)
-  FK_iduser_type Int
-  email          String  @db.VarChar(45)
-  phonenumber    Int
-  zipcode        String  @db.VarChar(45)
-  street         String  @db.VarChar(45)
-  FK_idcity      Int
-  password       String  @db.VarChar(256)
-
-  @@id([iduser, FK_iduser_type, FK_idcity])
+model Users {
+    iduser                  Int                 @id @default(autoincrement())
+    name                    String              @db.VarChar(45)
+    second_name             String?             @db.VarChar(45)
+    surname                 String              @db.VarChar(45)
+    iduser_type             Int
+    email                   String              @db.VarChar(45) @unique
+    phonenumber             Int
+    zipcode                 String              @db.VarChar(45)
+    street                  String              @db.VarChar(100)
+    idcity                  Int
+    password                String              @db.VarChar(256)
+    user_type               User_types          @relation(fields: [iduser_type], references: [iduser_type])
+    city                    Cities              @relation(fields: [idcity], references: [idcity])
+    comments                Comments[]
+    favourite_events        Favourite_events[]
+    orders                  Orders[]
 }
 
-model user_type {
-  iduser_type Int    @id
-  name_type   String @db.VarChar(45)
+model User_types{
+    iduser_type             Int                 @id
+    name_type               String              @db.VarChar(45)
+    users                   Users[]
 }
