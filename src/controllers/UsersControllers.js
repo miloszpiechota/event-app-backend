@@ -1,4 +1,4 @@
-import { response, request } from "express"
+import { response, request, query } from "express"
 import jwt from "jsonwebtoken"
 import bcryptjs from "bcryptjs"
 import env from "dotenv"
@@ -87,7 +87,7 @@ export const UsersCreate = async (req = request, res = response) => {
 export const UsersLogin = async (req = request, res = response) => {
  try {
   const { email, password } = await req.body
-  const Usercheck = await UsersModels.findUnique({
+  const Usercheck = await UsersModels.findFirst({
    where: {
     email: email,
    },
@@ -163,72 +163,85 @@ export const UsersRead = async (req = request, res = response) => {
 
 
 //      USERS UPDATE
+
 export const UsersUpdate = async (req = request, res = response) => {
- try {
-  const data = await req.body
-  const { id } = await req.params
+  try {
+    const { email, password, name, surname } = req.body;
+    const { id, FK_iduser_type, FK_idcity } = req.params;  // Zakładam, że te parametry są przekazywane w URL
 
-  const checkUniqueId = await UsersModels.findUnique({
-   where: {
-    iduser: parseInt(id),
-   }
-  })
+    // Sprawdzenie, czy użytkownik istnieje
+    const checkUniqueId = await UsersModels.findUnique({
+      where: {
+        iduser_FK_iduser_type_FK_idcity: {
+          iduser: parseInt(id),
+          FK_iduser_type: parseInt(FK_iduser_type),
+          FK_idcity: parseInt(FK_idcity),
+        },
+      },
+    });
 
-  const checkUniqueEmail = await UsersModels.findUnique({
-   where: {
-    email: data.email,
-   }
-  })
+    if (!checkUniqueId) {
+      return res.status(404).json({
+        success: false,
+        message: 'User ID not found!',
+      });
+    }
 
-  if (!checkUniqueId) {
-   return res.status(404).json({
-    success: false,
-    message: 'Id not found!',
-   })
+    // Sprawdzenie, czy email jest unikalny
+    const checkUniqueEmail = await UsersModels.findFirst({
+      where: {
+        email,
+      },
+    });
+
+    if (checkUniqueEmail && checkUniqueEmail.iduser !== parseInt(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already exists!',
+      });
+    }
+
+    // Aktualizacja użytkownika
+    const result = await UsersModels.update({
+      where: {
+        iduser_FK_iduser_type_FK_idcity: {
+          iduser: parseInt(id),
+          FK_iduser_type: parseInt(FK_iduser_type),
+          FK_idcity: parseInt(FK_idcity),
+        },
+      },
+      data: {
+        email,
+        password: bcryptjs.hashSync(password, salt), // Hashowanie hasła
+        name,
+        surname,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully updated user!",
+      user: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
-
-  if (checkUniqueEmail) {
-   return res.status(400).json({
-    success: false,
-    message: 'Email already exist!',
-   })
-  }
+};
 
 
-  const result = await UsersModels.update({
-   where: {
-    iduser: parseInt(id),
-   },
-   data: {
-    email: data.email,
-    password: bcryptjs.hashSync(data.password, salt), 
-    name: data.name, 
-    surname: data.surname,
-   },
-  })
-
-  res.status(201).json({
-   success: true,
-   msg: "Successfully update users!",
-  })
- } catch (error) {
-  res.status(500).json({
-   success: false,
-   error: error.message,
-  })
- }
-}
-
-//      USERS DELETE
 export const UsersDelete = async (req = request, res = response) => {
  try {
-  const { id } = await req.body
+  const { id } = req.params
 
-  const checkId = await UsersModels.findFirst({
-   where: {
-    iduser: parseInt(id),
-   }
-  })
+  const checkId = await UsersModels.findUnique({
+    where: {
+      iduser: {
+        iduser: parseInt(id),
+    },
+  }})
 
   if (!checkId) {
    return res.status(404).json({
@@ -246,6 +259,7 @@ export const UsersDelete = async (req = request, res = response) => {
   res.status(201).json({
    success: true,
    msg: "Successfully delete users!",
+   user: result,
   })
  } catch (error) {
   res.status(500).json({
