@@ -6,8 +6,6 @@ import cryptoJs from "crypto-js"
 import { UsersModels } from "../models/Models"
 import { connect } from "http2"
 
-const {PrismaClient, Prisma} = require('@prisma/client');
-const prisma = new PrismaClient();
 env.config()
 
 const salt = bcryptjs.genSaltSync(10)
@@ -194,7 +192,7 @@ export const UsersUpdate = async (req = request, res = response) => {
         email,
       },
     });
-    const existingUser = await prisma.users.findUnique({
+    const existingUser = await UsersModels.findUnique({
       where: {iduser: parseInt(id)}
     });
     if (checkUniqueEmail && checkUniqueEmail.iduser !== parseInt(id)) {
@@ -205,7 +203,7 @@ export const UsersUpdate = async (req = request, res = response) => {
     }
 
     // Aktualizacja użytkownika
-    const result = await prisma.users.update({
+    const result = await UsersModels.update({
       where: {
         iduser: parseInt(id),
       },
@@ -240,7 +238,7 @@ export const UsersDelete = async (req = request, res = response) => {
  try {
   const { id } = req.params
 
-  const checkId = await prisma.users.findUnique({
+  const checkId = await UsersModels.findUnique({
     where: {
       iduser: parseInt(id),
   }})
