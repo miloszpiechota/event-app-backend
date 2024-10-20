@@ -4,6 +4,10 @@ import bcryptjs from "bcryptjs"
 import env from "dotenv"
 import cryptoJs from "crypto-js"
 import { UsersModels } from "../models/Models"
+import { connect } from "http2"
+
+const {PrismaClient, Prisma} = require('@prisma/client');
+const prisma = new PrismaClient();
 env.config()
 
 const salt = bcryptjs.genSaltSync(10)
@@ -16,12 +20,12 @@ export const UsersCreate = async (req = request, res = response) => {
     name,
     second_name,
     surname,
-    FK_iduser_type,
+    iduser_type,
     email,
     phonenumber,
     zipcode,
     street,
-    FK_idcity,
+    idcity,
     password
   } = await req.body
   const checkUniqueEmail = await UsersModels.findFirst({
@@ -44,12 +48,12 @@ export const UsersCreate = async (req = request, res = response) => {
     name: name,
     second_name: second_name,
     surname: surname,
-    FK_iduser_type: FK_iduser_type,
+    iduser_type: iduser_type,
     email: email,
     phonenumber: phonenumber,
     zipcode: zipcode,
     street: street,
-    FK_idcity: FK_idcity,
+    idcity: idcity,
     password: bcryptjs.hashSync(password, salt)
     
    },
@@ -166,19 +170,16 @@ export const UsersRead = async (req = request, res = response) => {
 
 export const UsersUpdate = async (req = request, res = response) => {
   try {
-    const { email, password, name, surname } = req.body;
-    const { id, FK_iduser_type, FK_idcity } = req.params;  // Zakładam, że te parametry są przekazywane w URL
+    const { name, second_name, surname, email, phonenumber, zipcode, street, idcity } = req.body;
+    const { id } = req.params;  // Zakładam, że te parametry są przekazywane w URL
 
     // Sprawdzenie, czy użytkownik istnieje
     const checkUniqueId = await UsersModels.findUnique({
-      where: {
-        iduser_FK_iduser_type_FK_idcity: {
-          iduser: parseInt(id),
-          FK_iduser_type: parseInt(FK_iduser_type),
-          FK_idcity: parseInt(FK_idcity),
-        },
+      where: { 
+        iduser: parseInt(id),
       },
     });
+    
 
     if (!checkUniqueId) {
       return res.status(404).json({
@@ -193,7 +194,9 @@ export const UsersUpdate = async (req = request, res = response) => {
         email,
       },
     });
-
+    const existingUser = await prisma.users.findUnique({
+      where: {iduser: parseInt(id)}
+    });
     if (checkUniqueEmail && checkUniqueEmail.iduser !== parseInt(id)) {
       return res.status(400).json({
         success: false,
@@ -202,19 +205,20 @@ export const UsersUpdate = async (req = request, res = response) => {
     }
 
     // Aktualizacja użytkownika
-    const result = await UsersModels.update({
+    const result = await prisma.users.update({
       where: {
-        iduser_FK_iduser_type_FK_idcity: {
-          iduser: parseInt(id),
-          FK_iduser_type: parseInt(FK_iduser_type),
-          FK_idcity: parseInt(FK_idcity),
-        },
+        iduser: parseInt(id),
       },
       data: {
-        email,
-        password: bcryptjs.hashSync(password, salt), // Hashowanie hasła
-        name,
-        surname,
+        name: name || existingUser.name,
+        second_name: second_name || existingUser.second_name,
+        surname: surname || existingUser.surname,
+        email: email || existingUser.email,
+        phonenumber: phonenumber || existingUser.phonenumber,
+        zipcode: zipcode || existingUser.zipcode,
+        street: street || existingUser.street,
+        idcity: idcity ||  existingUser.idcity,
+        // password: bcryptjs.hashSync(password, salt) || existingUser.password, // Hashowanie hasła 
       },
     });
 
@@ -236,13 +240,11 @@ export const UsersDelete = async (req = request, res = response) => {
  try {
   const { id } = req.params
 
-  const checkId = await UsersModels.findUnique({
+  const checkId = await prisma.users.findUnique({
     where: {
-      iduser: {
-        iduser: parseInt(id),
-    },
+      iduser: parseInt(id),
   }})
-
+  
   if (!checkId) {
    return res.status(404).json({
     success: false,
