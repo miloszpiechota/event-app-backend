@@ -105,12 +105,19 @@ model Order_tickets {
     order                   Orders              @relation(fields: [idorder], references: [idorder])
 }
 
+model payment_methods {
+    idpayment_method        Int                 @id @default(autoincrement())
+    name                    String              @db.VarChar(45)
+    payments                Payments[]
+}
+
 model Payments {
     idpayment               Int                 @id @default(autoincrement())
     idorder                 Int
-    payment_methods         String
+    idpayment_method        Int
     payment_status          String
     order                   Orders              @relation(fields: [idorder], references: [idorder])
+    payment_method          payment_methods     @relation(fields: [idpayment_method], references: [idpayment_method])
 }
 
 model Users {

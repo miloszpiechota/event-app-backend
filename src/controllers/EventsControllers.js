@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 import bcryptjs from "bcryptjs"
 import env from "dotenv"
 import cryptoJs from "crypto-js"
-import { EventModels } from "../models/Models"
+import { EventsModels } from "../models/Models"
 env.config()
 
 const salt = bcryptjs.genSaltSync(10)
@@ -56,7 +56,7 @@ export const EventCreate = async (req = request, res = response) => {
 // Read Events
 export const EventRead = async (req = request, res = response) => {
     try {
-        const readEvents = await EventModels.findMany({
+        const readEvents = await EventsModels.findMany({
             select: {
                 name: true,
                 start_date: true,
