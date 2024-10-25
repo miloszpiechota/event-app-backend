@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
     provider = "mysql"
-    url      = env("DATABASE_URL")
+    url = env("DATABASE_URL")
 }
 
 model Cities {
@@ -116,6 +116,7 @@ model Payments {
     idorder                 Int
     idpayment_method        Int
     payment_status          String
+    //payment_amount        Double
     order                   Orders              @relation(fields: [idorder], references: [idorder])
     payment_method          payment_methods     @relation(fields: [idpayment_method], references: [idpayment_method])
 }
