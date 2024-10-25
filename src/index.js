@@ -10,6 +10,7 @@ const PORT = process.env.PORT;
 import users_controllers from "./routes/UsersRoutes"
 import event_controllers from "./routes/EventsRoutes"
 import paymentmethod_controllers from "./routes/PaymentMethodRoutes"
+import  comments_controllers  from "./routes/CommentsRoutes"
 import { rateLimit } from "express-rate-limit"
 
 // RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
@@ -57,6 +58,7 @@ app.use(express.static(path.join(__dirname, "../static")))
 app.use("/api", users_controllers)
 app.use("/api/events", event_controllers);
 app.use("/api/payment", paymentmethod_controllers);
+app.use("/api/comments", comments_controllers);
 
 //  LISTENER
 app.listen(PORT, () => {
