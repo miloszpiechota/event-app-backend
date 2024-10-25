@@ -27,7 +27,7 @@ model Comments {
     idevent                 Int
     iduser                  Int
     comment                 String              @db.VarChar(512)
-    date_comment            DateTime            @db.Date
+    date_comment            DateTime            @db.Date @default(now())
     event                   Events              @relation(fields: [idevent], references: [idevent])
     user                    Users               @relation(fields: [iduser], references: [iduser])
 }
