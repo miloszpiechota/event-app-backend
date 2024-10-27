@@ -1,0 +1,123 @@
+{
+    "roles": [
+        {
+            "name": "admin",
+            "permissions": {
+                "comments": [
+                    "create",
+                    "read",
+                    "update",
+                    "delete"
+                ],
+                "events": [
+                    "create",
+                    "read",
+                    "update",
+                    "delete"
+                ],
+                "payments": [
+                    "create",
+                    "read",
+                    "update",
+                    "delete"
+                ],
+                "users": [
+                    "create",
+                    "read",
+                    "read_self",
+                    "update",
+                    "delete"
+                ]
+            }
+        },
+        {
+            "name": "user",
+            "permissions": {
+                "comments": [
+                    "create",
+                    "read"
+                ],
+                "events": [
+                    "read"
+                ],
+                "payments": [
+                    "create",
+                    "read"
+                ],
+                "users": [
+                    "read_self",
+                    "update_self"
+                ]
+            }
+        },
+        {
+            "name": "events_creator",
+            "permissions": {
+                "comments": [
+                    "create",
+                    "read"
+                ],
+                "events": [
+                    "create",
+                    "read",
+                    "update"
+                ],
+                "payments": [
+                    "create",
+                    "read"
+                ],
+                "users": [
+                    "read_self",
+                    "update_self"
+                ]
+            }
+        },
+        {
+            "name": "events_ticket_validator",
+            "permissions": {
+                "comments": [
+                    "create",
+                    "read"
+                ],
+                "events": [
+                    "read"
+                ],
+                "payments": [
+                    "create",
+                    "read"
+                ],
+                "users": [
+                    "read_self",
+                    "update_self"
+                ]
+            }
+        },
+        {
+            "name": "moderator",
+            "permissions": {
+                "comments": [
+                    "create",
+                    "read",
+                    "update",
+                    "delete"
+                ],
+                "events": [
+                    "create",
+                    "read",
+                    "update",
+                    "delete"
+                ],
+                "payments": [
+                    "create",
+                    "read"
+                ],
+                "users": [
+                    "read",
+                    "read_self",
+                    "update",
+                    "update_self"
+                ]
+            }
+        }
+    ]
+}
