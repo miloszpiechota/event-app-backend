@@ -68,6 +68,7 @@ export const EventRead = async (req = request, res = response) => {
                 idevent_category: true,
                 idevent_location: true,
                 status: true,
+                is_seat_categorized: true
             }
         })
 

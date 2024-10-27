@@ -27,7 +27,7 @@ model Comments {
     idevent                 Int
     iduser                  Int
     comment                 String              @db.VarChar(512)
-    date_comment            DateTime            @db.Date @default(now())
+    date_comment            DateTime            @db.DateTime(0) 
     event                   Events              @relation(fields: [idevent], references: [idevent])
     user                    Users               @relation(fields: [iduser], references: [iduser])
 }
@@ -39,11 +39,12 @@ model Events {
     end_date                DateTime?           @db.DateTime(0)
     description             String?             @db.VarChar(1024)
     number_of_ticket        Int
-    photo                   Bytes?              @db.Blob
+    photo                   String?             @db.VarChar(1024)
     contact_info            String              @db.VarChar(256)
     idevent_category        Int
     idevent_location        Int
     status                  Int                 @db.TinyInt
+    is_seat_categorized     Boolean             // Nowe pole typu Boolean
     event_category          Event_categories    @relation(fields: [idevent_category], references: [idevent_category])
     event_location          Event_locations     @relation(fields: [idevent_location], references: [idevent_location])
     event_tickets           Event_tickets[]
