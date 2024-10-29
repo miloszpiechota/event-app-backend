@@ -13,6 +13,8 @@ import paymentmethod_controllers from "./routes/PaymentMethodRoutes"
 import  comments_controllers  from "./routes/CommentsRoutes"
 import events_controllers from "./routes/EventsRoutes"
 import { rateLimit } from "express-rate-limit"
+import categoryRoutes from "./routes/category";
+import CitiesRoutes from "./routes/CitiesRoutes"; 
 
 // RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
 const limiter = rateLimit({
@@ -61,7 +63,8 @@ app.use("/api/payment", paymentmethod_controllers);
 app.use("/api/comments", comments_controllers);
 app.use("/api/users", users_controllers)
 app.use("/api/events", events_controllers)
-
+app.use("/api/categories", categoryRoutes);
+app.use("/api/cities", CitiesRoutes);
 //  LISTENER
 app.listen(PORT, () => {
     console.log(`Server is up and running on port ${PORT}`);
