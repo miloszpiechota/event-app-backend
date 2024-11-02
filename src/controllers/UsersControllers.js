@@ -6,7 +6,7 @@ import cryptoJs from "crypto-js";
 import { UsersModels } from "../models/Models";
 import { connect } from "http2";
 import userTypes from "../config/userTypes";
-
+import { body, validationResult } from 'express-validator';
 
 env.config();
 
