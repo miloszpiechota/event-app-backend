@@ -54,10 +54,12 @@ export const EventCreate = async (req = request, res = response) => {
 };
 
 // Read Events
+// Read Events
 export const EventRead = async (req = request, res = response) => {
     try {
         const readEvents = await EventsModels.findMany({
             select: {
+                idevent: true,            // Dodano idevent, aby było dostępne w odpowiedzi API
                 name: true,
                 start_date: true,
                 end_date: true,
@@ -85,6 +87,7 @@ export const EventRead = async (req = request, res = response) => {
         })
     }
 }
+
 
 // update Event
 export const EventUpdate = async (req = request, res = response) => {
