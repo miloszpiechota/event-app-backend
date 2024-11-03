@@ -17,6 +17,7 @@ import categoryRoutes from "./routes/category";
 import CitiesRoutes from "./routes/CitiesRoutes"; 
 import LocationsRoutes from "./routes/LocationsRoutes";
 import EventTickets from "./routes/EventTicketRoutes";
+import usersRouter from "./routes/UsersRoutes";
 // RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
 const limiter = rateLimit({
  windowMs: 15 * 60 * 1000, //15 minutes
@@ -69,6 +70,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/cities", CitiesRoutes);
 app.use("/api/locations", LocationsRoutes);
 app.use("/api/event_tickets", EventTickets);
+app.use("/api/users", usersRouter);
 //  LISTENER
 app.listen(PORT, () => {
     console.log(`Server is up and running on port ${PORT}`);

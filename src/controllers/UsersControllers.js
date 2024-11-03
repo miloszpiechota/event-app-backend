@@ -89,27 +89,28 @@ export const UsersCreate = async (req = request, res = response) => {
 //      USERS LOGIN
 export const UsersLogin = async (req = request, res = response) => {
   try {
-    const { email, password } = await req.body;
+    const { email, password } = req.body;
+
     const Usercheck = await UsersModels.findFirst({
-      where: {
-        email: email,
-      },
+      where: { email },
     });
 
     if (!Usercheck) {
-      res.status(401).json({
+      return res.status(401).json({
         success: false,
-        msg: "Email Not Found!",
+        msg: "Email not found!",
       });
-      return;
     }
 
-    const comparePassword = await bcryptjs.compareSync(
-      password,
-      Usercheck.password
-    );
+    const comparePassword = bcryptjs.compareSync(password, Usercheck.password);
+    if (!comparePassword) {
+      return res.status(401).json({
+        success: false,
+        msg: "Incorrect password!",
+      });
+    }
 
-    const token = await jwt.sign(
+    const token = jwt.sign(
       {
         app_name: "inzynierka",
         id: Usercheck.iduser,
@@ -117,17 +118,10 @@ export const UsersLogin = async (req = request, res = response) => {
         iduser_type: Usercheck.iduser_type,
       },
       process.env.API_SECRET,
-      {
-        expiresIn: "10d",
-      }
+      { expiresIn: "10d" }
     );
 
-    const hashToken = await cryptoJs.AES.encrypt(
-      token,
-      process.env.API_SECRET
-    ).toString();
-
-    res.setHeader("Access-Controll-Allow-Origin", "*");
+    const hashToken = cryptoJs.AES.encrypt(token, process.env.API_SECRET).toString();
 
     res.status(200).json({
       success: true,
@@ -326,12 +320,15 @@ export const UsersDelete = async (req = request, res = response) => {
 };
 
 //  USER AUTH
-// Read User Data
+// User Authentication Check
 export const UserAuth = async (req = request, res = response) => {
   try {
     const token = req.headers.authorization;
     if (!token) {
-      return res.status(401).json({ success: false, msg: "Login first to get tokens." });
+      return res.status(401).json({
+        success: false,
+        msg: "Login first to get tokens?",
+      });
     }
 
     const bearer = token.split(" ")[1];
@@ -339,17 +336,40 @@ export const UserAuth = async (req = request, res = response) => {
     const verify = jwt.verify(decToken, process.env.API_SECRET);
 
     if (!verify) {
-      return res.status(401).json({ success: false, msg: "Invalid token." });
+      return res.status(401).json({
+        success: false,
+        msg: "Invalid token.",
+      });
     }
 
-    const userData = await UsersModels.findUnique({ where: { iduser: verify.id } });
-    if (!userData) {
-      return res.status(404).json({ success: false, msg: "User not found!" });
+    if (verify.exp < Date.now() / 1000) {
+      return res.status(401).json({
+        success: false,
+        msg: "Token expired.",
+      });
     }
 
-    const { password, ...userWithoutPassword } = userData; // Exclude password from response
-    return res.status(200).json({ success: true, user: userWithoutPassword });
+    const getUserData = await UsersModels.findUnique({
+      where: { iduser: parseInt(verify.id) },
+    });
+
+    if (!getUserData) {
+      return res.status(404).json({
+        success: false,
+        msg: "User not found!",
+      });
+    }
+
+    const { password, ...userWithoutPassword } = getUserData; // Remove password from response
+
+    return res.status(200).json({
+      success: true,
+      user: userWithoutPassword,
+    });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
