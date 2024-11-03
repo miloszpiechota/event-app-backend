@@ -59,6 +59,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, "../static")))
 
 //  ROUTES
+
 app.use("/api", users_controllers)
 app.use("/api/payment", paymentmethod_controllers);
 app.use("/api/comments", comments_controllers);

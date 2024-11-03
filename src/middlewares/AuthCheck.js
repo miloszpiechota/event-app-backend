@@ -3,65 +3,43 @@ import env from "dotenv";
 import cryptoJs from "crypto-js";
 env.config();
 
-
-
-// const userTypeCheck = (requiredType) => (req, res, next) => {
-//   authCheck(req, res, () => {
-//       if (req.user.iduser_type !== requiredType) {
-//           res.status(403).json({
-//               success: false,
-//               msg: "Access Denied",
-//           });
-//           return;
-//       }
-//       next();
-//   });
-// };
-export const authCheck = async (req = request, res = response, next) => {
+export const authCheck = async (req, res, next) => {
   try {
-    const token = await req.headers["authorization"];
+    const token = req.headers["authorization"];
 
-    if (!token) {
-      res.status(401).json({
+    if (!token || !token.startsWith("Bearer ")) {
+      return res.status(401).json({
         success: false,
-        msg: "Login first to get tokens ?",
+        msg: "Login first to get tokens.",
       });
-      return;
     }
 
-    const decToken = await cryptoJs.AES.decrypt(
-      token.split(" ")[1],
-      process.env.API_SECRET
-    ).toString(cryptoJs.enc.Utf8);
+    const tokenValue = token.split(" ")[1];
+    const decToken = cryptoJs.AES.decrypt(tokenValue, process.env.API_SECRET).toString(cryptoJs.enc.Utf8);
 
-    const verify = await jwt.verify(decToken, process.env.API_SECRET);
+    const verify = jwt.verify(decToken, process.env.API_SECRET);
 
     if (!verify) {
-      res.status(401).json({
+      return res.status(401).json({
         success: false,
-        msg: "Login first to get tokens ?",
+        msg: "Invalid token. Please log in.",
       });
-      return;
     }
 
-    if (verify.exp < Date.now() / 1000) {
-      res.status(401).json({
+    if (verify.exp < Math.floor(Date.now() / 1000)) {
+      return res.status(401).json({
         success: false,
-        msg: "Token Expirited",
+        msg: "Token expired. Please log in again.",
       });
-      return;
     }
-    req.user = verify;
+
+    req.user = verify; // Attach verified user data to request
     next();
   } catch (error) {
+    console.error(error);
     res.status(401).json({
       success: false,
-      msg: "Login first to get tokens ?",
+      msg: "An error occurred. Please log in.",
     });
   }
 };
-// export const userTypeCheckMiddleware = userTypeCheck(TypeUser);
-// export const adminTypeCheckMiddleware = userTypeCheck(TypeAdmin);
-// export const eventsCreatorTypeCheckMiddleware = userTypeCheck(TypeEventsCreator);
-// export const eventsTicketValidatorTypeCheckMiddleware = userTypeCheck(TypeEventsTicketValidator);
-// export const moderatorTypeCheckMiddleware = userTypeCheck(TypeModerator);

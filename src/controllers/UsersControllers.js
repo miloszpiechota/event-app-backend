@@ -326,87 +326,30 @@ export const UsersDelete = async (req = request, res = response) => {
 };
 
 //  USER AUTH
+// Read User Data
 export const UserAuth = async (req = request, res = response) => {
   try {
-    const token = await req.headers.authorization;
+    const token = req.headers.authorization;
     if (!token) {
-      res.status(401).json({
-        success: false,
-        msg: "Login first to get tokens ?",
-      });
-      return res.status(401).json({
-        success: false,
-        error: "Token tidak ditemukan",
-      });
+      return res.status(401).json({ success: false, msg: "Login first to get tokens." });
     }
-    const bearer = await token.split(" ")[1];
 
-    const decToken = await cryptoJs.AES.decrypt(
-      bearer,
-      process.env.API_SECRET
-    ).toString(cryptoJs.enc.Utf8);
-
-    const verify = await jwt.verify(decToken, process.env.API_SECRET);
+    const bearer = token.split(" ")[1];
+    const decToken = cryptoJs.AES.decrypt(bearer, process.env.API_SECRET).toString(cryptoJs.enc.Utf8);
+    const verify = jwt.verify(decToken, process.env.API_SECRET);
 
     if (!verify) {
-      res.status(401).json({
-        success: false,
-        msg: "Login first to get tokens ?",
-      });
-      return res.status(401).json({
-        success: false,
-        error: "Error",
-      });
+      return res.status(401).json({ success: false, msg: "Invalid token." });
     }
 
-    if (verify.exp < Date.now() / 1000) {
-      res.status(401).json({
-        success: false,
-        msg: "Token Expirited",
-      });
-      return res.status(401).json({
-        success: false,
-        error: "Token Expirited",
-      });
+    const userData = await UsersModels.findUnique({ where: { iduser: verify.id } });
+    if (!userData) {
+      return res.status(404).json({ success: false, msg: "User not found!" });
     }
 
-    const getUserData = await UsersModels.findUnique({
-      where: {
-        iduser: parseInt(verify.id),
-      },
-    });
-
-    //   const removePass = delete getUserData.password
-
-    //   return res.status(200).json({
-    //    success: true,
-    //    query: getUserData
-    //   })
-    //  } catch (error) {
-    //   res.status(500).json({
-    //    success: false,
-    //    error: error.message,
-    //   })
-    //  }
-    // }
-
-    if (!getUserData) {
-      return res.status(404).json({
-        success: false,
-        msg: "User not found!",
-      });
-    }
-
-    const { password, ...userWithoutPassword } = getUserData; // Usunięcie hasła z odpowiedzi
-
-    return res.status(200).json({
-      success: true,
-      query: userWithoutPassword,
-    });
+    const { password, ...userWithoutPassword } = userData; // Exclude password from response
+    return res.status(200).json({ success: true, user: userWithoutPassword });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
