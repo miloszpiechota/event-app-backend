@@ -24,7 +24,7 @@ export const authCheck = async (req, res, next) => {
     const decToken = cryptoJs.AES.decrypt(tokenValue, process.env.API_SECRET).toString(cryptoJs.enc.Utf8);
 
     // Verify the decrypted token using JWT
-    const verify = jwt.verify(decToken, process.env.JWT_SECRET); // Changed to use a separate secret for JWT
+    const verify = jwt.verify(decToken, process.env.API_SECRET); // Changed to use a separate secret for JWT
 
     // Check if the token has expired
     if (!verify || verify.exp < Math.floor(Date.now() / 1000)) {
