@@ -19,6 +19,7 @@ import LocationsRoutes from "./routes/LocationsRoutes";
 import EventTickets from "./routes/EventTicketRoutes";
 import usersRouter from "./routes/UsersRoutes";
 import orderRouter from "./routes/OrderRoutes"; 
+
 // RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
 const limiter = rateLimit({
  windowMs: 15 * 60 * 1000, //15 minutes
