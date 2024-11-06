@@ -17,6 +17,7 @@ import orders_controllers from "./routes/OrdersRoures"
 import order_tickets_controllers from "./routes/OrderTicketsRoutes"
 import payments_controllers from "./routes/PaymentsRoutes"
 import favourite_events_controllers from "./routes/FavouriteEventsRoutes"
+import user_types_controllers from "./routes/UserTypesRoutes"
 // RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
 const limiter = rateLimit({
  windowMs: 15 * 60 * 1000, //15 minutes
@@ -68,6 +69,7 @@ app.use("/api/orders",orders_controllers)
 app.use("/api/order_tickets", order_tickets_controllers);
 app.use("/api/payments", payments_controllers);
 app.use("/api/favourite_events", favourite_events_controllers);
+app.use("/api/user_types", user_types_controllers);
 //  LISTENER
 app.listen(PORT, () => {
     console.log(`Server is up and running on port ${PORT}`);
