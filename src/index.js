@@ -13,11 +13,21 @@ import paymentmethod_controllers from "./routes/PaymentMethodRoutes"
 import  comments_controllers  from "./routes/CommentsRoutes"
 import events_controllers from "./routes/EventsRoutes"
 import { rateLimit } from "express-rate-limit"
+
 import orders_controllers from "./routes/OrdersRoures"
 import order_tickets_controllers from "./routes/OrderTicketsRoutes"
 import payments_controllers from "./routes/PaymentsRoutes"
 import favourite_events_controllers from "./routes/FavouriteEventsRoutes"
 import user_types_controllers from "./routes/UserTypesRoutes"
+
+import categoryRoutes from "./routes/category";
+import CitiesRoutes from "./routes/CitiesRoutes"; 
+import LocationsRoutes from "./routes/LocationsRoutes";
+import EventTickets from "./routes/EventTicketRoutes";
+import usersRouter from "./routes/UsersRoutes";
+import orderRouter from "./routes/OrderRoutes"; 
+
+
 // RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
 const limiter = rateLimit({
  windowMs: 15 * 60 * 1000, //15 minutes
@@ -60,16 +70,26 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, "../static")))
 
 //  ROUTES
+
 app.use("/api", users_controllers)
 app.use("/api/payment", paymentmethod_controllers);
 app.use("/api/comments", comments_controllers);
 app.use("/api/users", users_controllers)
 app.use("/api/events", events_controllers)
+
 app.use("/api/orders",orders_controllers)
 app.use("/api/order_tickets", order_tickets_controllers);
 app.use("/api/payments", payments_controllers);
 app.use("/api/favourite_events", favourite_events_controllers);
 app.use("/api/user_types", user_types_controllers);
+
+app.use("/api/categories", categoryRoutes);
+app.use("/api/cities", CitiesRoutes);
+app.use("/api/locations", LocationsRoutes);
+app.use("/api/event_tickets", EventTickets);
+app.use("/api/users", usersRouter);
+app.use("/api/orders", orderRouter);
+
 //  LISTENER
 app.listen(PORT, () => {
     console.log(`Server is up and running on port ${PORT}`);

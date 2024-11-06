@@ -6,7 +6,7 @@ import cryptoJs from "crypto-js";
 import { UsersModels } from "../models/Models";
 import { connect } from "http2";
 import userTypes from "../config/userTypes";
-
+import { body, validationResult } from 'express-validator';
 
 env.config();
 
@@ -89,27 +89,28 @@ export const UsersCreate = async (req = request, res = response) => {
 //      USERS LOGIN
 export const UsersLogin = async (req = request, res = response) => {
   try {
-    const { email, password } = await req.body;
+    const { email, password } = req.body;
+
     const Usercheck = await UsersModels.findFirst({
-      where: {
-        email: email,
-      },
+      where: { email },
     });
 
     if (!Usercheck) {
-      res.status(401).json({
+      return res.status(401).json({
         success: false,
-        msg: "Email Not Found!",
+        msg: "Email not found!",
       });
-      return;
     }
 
-    const comparePassword = await bcryptjs.compareSync(
-      password,
-      Usercheck.password
-    );
+    const comparePassword = bcryptjs.compareSync(password, Usercheck.password);
+    if (!comparePassword) {
+      return res.status(401).json({
+        success: false,
+        msg: "Incorrect password!",
+      });
+    }
 
-    const token = await jwt.sign(
+    const token = jwt.sign(
       {
         app_name: "inzynierka",
         id: Usercheck.iduser,
@@ -117,17 +118,10 @@ export const UsersLogin = async (req = request, res = response) => {
         iduser_type: Usercheck.iduser_type,
       },
       process.env.API_SECRET,
-      {
-        expiresIn: "10d",
-      }
+      { expiresIn: "10d" }
     );
 
-    const hashToken = await cryptoJs.AES.encrypt(
-      token,
-      process.env.API_SECRET
-    ).toString();
-
-    res.setHeader("Access-Controll-Allow-Origin", "*");
+    const hashToken = cryptoJs.AES.encrypt(token, process.env.API_SECRET).toString();
 
     res.status(200).json({
       success: true,
@@ -326,69 +320,38 @@ export const UsersDelete = async (req = request, res = response) => {
 };
 
 //  USER AUTH
+// User Authentication Check
 export const UserAuth = async (req = request, res = response) => {
   try {
-    const token = await req.headers.authorization;
+    const token = req.headers.authorization;
     if (!token) {
-      res.status(401).json({
-        success: false,
-        msg: "Login first to get tokens ?",
-      });
       return res.status(401).json({
         success: false,
-        error: "Token tidak ditemukan",
+        msg: "Login first to get tokens?",
       });
     }
-    const bearer = await token.split(" ")[1];
 
-    const decToken = await cryptoJs.AES.decrypt(
-      bearer,
-      process.env.API_SECRET
-    ).toString(cryptoJs.enc.Utf8);
-
-    const verify = await jwt.verify(decToken, process.env.API_SECRET);
+    const bearer = token.split(" ")[1];
+    const decToken = cryptoJs.AES.decrypt(bearer, process.env.API_SECRET).toString(cryptoJs.enc.Utf8);
+    const verify = jwt.verify(decToken, process.env.API_SECRET);
 
     if (!verify) {
-      res.status(401).json({
-        success: false,
-        msg: "Login first to get tokens ?",
-      });
       return res.status(401).json({
         success: false,
-        error: "Error",
+        msg: "Invalid token.",
       });
     }
 
     if (verify.exp < Date.now() / 1000) {
-      res.status(401).json({
-        success: false,
-        msg: "Token Expirited",
-      });
       return res.status(401).json({
         success: false,
-        error: "Token Expirited",
+        msg: "Token expired.",
       });
     }
 
     const getUserData = await UsersModels.findUnique({
-      where: {
-        iduser: parseInt(verify.id),
-      },
+      where: { iduser: parseInt(verify.id) },
     });
-
-    //   const removePass = delete getUserData.password
-
-    //   return res.status(200).json({
-    //    success: true,
-    //    query: getUserData
-    //   })
-    //  } catch (error) {
-    //   res.status(500).json({
-    //    success: false,
-    //    error: error.message,
-    //   })
-    //  }
-    // }
 
     if (!getUserData) {
       return res.status(404).json({
@@ -397,11 +360,11 @@ export const UserAuth = async (req = request, res = response) => {
       });
     }
 
-    const { password, ...userWithoutPassword } = getUserData; // Usunięcie hasła z odpowiedzi
+    const { password, ...userWithoutPassword } = getUserData; // Remove password from response
 
     return res.status(200).json({
       success: true,
-      query: userWithoutPassword,
+      user: userWithoutPassword,
     });
   } catch (error) {
     res.status(500).json({

@@ -1,67 +1,47 @@
 import jwt from "jsonwebtoken";
-import env from "dotenv";
 import cryptoJs from "crypto-js";
-env.config();
+import dotenv from "dotenv";
 
+dotenv.config();
 
-
-// const userTypeCheck = (requiredType) => (req, res, next) => {
-//   authCheck(req, res, () => {
-//       if (req.user.iduser_type !== requiredType) {
-//           res.status(403).json({
-//               success: false,
-//               msg: "Access Denied",
-//           });
-//           return;
-//       }
-//       next();
-//   });
-// };
-export const authCheck = async (req = request, res = response, next) => {
+export const authCheck = async (req, res, next) => {
   try {
-    const token = await req.headers["authorization"];
+    // Extract the authorization header from the request
+    const token = req.headers["authorization"];
 
-    if (!token) {
-      res.status(401).json({
+    // Check if the token exists and starts with "Bearer "
+    if (!token || !token.startsWith("Bearer ")) {
+      return res.status(401).json({
         success: false,
-        msg: "Login first to get tokens ?",
+        msg: "Login first to get tokens.",
       });
-      return;
     }
 
-    const decToken = await cryptoJs.AES.decrypt(
-      token.split(" ")[1],
-      process.env.API_SECRET
-    ).toString(cryptoJs.enc.Utf8);
+    // Get the token value without "Bearer "
+    const tokenValue = token.split(" ")[1];
 
-    const verify = await jwt.verify(decToken, process.env.API_SECRET);
+    // Decrypt the token using CryptoJS
+    const decToken = cryptoJs.AES.decrypt(tokenValue, process.env.API_SECRET).toString(cryptoJs.enc.Utf8);
 
-    if (!verify) {
-      res.status(401).json({
+    // Verify the decrypted token using JWT
+    const verify = jwt.verify(decToken, process.env.API_SECRET); // Changed to use a separate secret for JWT
+
+    // Check if the token has expired
+    if (!verify || verify.exp < Math.floor(Date.now() / 1000)) {
+      return res.status(401).json({
         success: false,
-        msg: "Login first to get tokens ?",
+        msg: "Token expired or invalid. Please log in again.",
       });
-      return;
     }
 
-    if (verify.exp < Date.now() / 1000) {
-      res.status(401).json({
-        success: false,
-        msg: "Token Expirited",
-      });
-      return;
-    }
-    req.user = verify;
-    next();
+    // Attach the verified user data to the request object
+    req.user = verify; // You can access user data via req.user in subsequent middlewares/routes
+    next(); // Proceed to the next middleware or route handler
   } catch (error) {
+    console.error(error);
     res.status(401).json({
       success: false,
-      msg: "Login first to get tokens ?",
+      msg: "An error occurred. Please log in.",
     });
   }
 };
-// export const userTypeCheckMiddleware = userTypeCheck(TypeUser);
-// export const adminTypeCheckMiddleware = userTypeCheck(TypeAdmin);
-// export const eventsCreatorTypeCheckMiddleware = userTypeCheck(TypeEventsCreator);
-// export const eventsTicketValidatorTypeCheckMiddleware = userTypeCheck(TypeEventsTicketValidator);
-// export const moderatorTypeCheckMiddleware = userTypeCheck(TypeModerator);

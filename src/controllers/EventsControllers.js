@@ -54,37 +54,65 @@ export const EventCreate = async (req = request, res = response) => {
 };
 
 // Read Events
+// Read Events
 export const EventRead = async (req = request, res = response) => {
     try {
-        const readEvents = await EventsModels.findMany({
-            select: {
-                name: true,
-                start_date: true,
-                end_date: true,
-                description: true,
-                number_of_ticket: true,
-                photo: true,
-                contact_info: true,
-                idevent_category: true,
-                idevent_location: true,
-                status: true,
-                is_seat_categorized: true
-            }
-        })
+        const { id } = req.params; // Get the event ID from URL params
+        let readEvents;
+
+        if (id) {
+            // Fetch a specific event by ID if ID is provided
+            readEvents = await EventsModels.findUnique({
+                where: { idevent: parseInt(id) },  // Assuming 'idevent' is the field for event ID
+                select: {
+                    idevent: true,
+                    name: true,
+                    start_date: true,
+                    end_date: true,
+                    description: true,
+                    number_of_ticket: true,
+                    photo: true,
+                    contact_info: true,
+                    idevent_category: true,
+                    idevent_location: true,
+                    status: true,
+                    is_seat_categorized: true
+                }
+            });
+        } else {
+            // Fetch all events if no ID is provided
+            readEvents = await EventsModels.findMany({
+                select: {
+                    idevent: true,
+                    name: true,
+                    start_date: true,
+                    end_date: true,
+                    description: true,
+                    number_of_ticket: true,
+                    photo: true,
+                    contact_info: true,
+                    idevent_category: true,
+                    idevent_location: true,
+                    status: true,
+                    is_seat_categorized: true
+                }
+            });
+        }
 
         res.status(200).json({
             success: true,
-            msg: "Successfully read events!",
+            msg: "Successfully read event(s)!",
             event: readEvents,
-        })
+        });
 
     } catch (error) {
         res.status(500).json({
             success: false,
             error: error.message,
-        })
+        });
     }
 }
+
 
 // update Event
 export const EventUpdate = async (req = request, res = response) => {
