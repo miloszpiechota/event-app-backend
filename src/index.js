@@ -15,6 +15,7 @@ import events_controllers from "./routes/EventsRoutes"
 import { rateLimit } from "express-rate-limit"
 import orders_controllers from "./routes/OrdersRoures"
 import order_tickets_controllers from "./routes/OrderTicketsRoutes"
+import payments_controllers from "./routes/PaymentsRoutes"
 // RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
 const limiter = rateLimit({
  windowMs: 15 * 60 * 1000, //15 minutes
@@ -64,6 +65,7 @@ app.use("/api/users", users_controllers)
 app.use("/api/events", events_controllers)
 app.use("/api/orders",orders_controllers)
 app.use("/api/order_tickets", order_tickets_controllers);
+app.use("/api/payments", payments_controllers);
 //  LISTENER
 app.listen(PORT, () => {
     console.log(`Server is up and running on port ${PORT}`);
