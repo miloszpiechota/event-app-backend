@@ -10,7 +10,7 @@ const app = express()
 const PORT = process.env.PORT;
 import users_controllers from "./routes/UsersRoutes"
 import paymentmethod_controllers from "./routes/PaymentMethodRoutes"
-import  comments_controllers  from "./routes/CommentsRoutes"
+import comments_controllers  from "./routes/CommentsRoutes"
 import events_controllers from "./routes/EventsRoutes"
 import { rateLimit } from "express-rate-limit"
 import categoryRoutes from "./routes/category";
@@ -19,6 +19,7 @@ import LocationsRoutes from "./routes/LocationsRoutes";
 import EventTickets from "./routes/EventTicketRoutes";
 import usersRouter from "./routes/UsersRoutes";
 import orderRouter from "./routes/OrderRoutes"; 
+import router from "./routes/EventTicketRoutes";
 
 // RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
 const limiter = rateLimit({
@@ -74,6 +75,8 @@ app.use("/api/locations", LocationsRoutes);
 app.use("/api/event_tickets", EventTickets);
 app.use("/api/users", usersRouter);
 app.use("/api/orders", orderRouter);
+// inna konwencja nazewnicza
+app.use("/api/event_tickets", router);
 //  LISTENER
 app.listen(PORT, () => {
     console.log(`Server is up and running on port ${PORT}`);
