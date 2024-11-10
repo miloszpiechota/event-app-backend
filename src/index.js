@@ -75,8 +75,6 @@ app.use("/api/locations", LocationsRoutes);
 app.use("/api/event_tickets", EventTickets);
 app.use("/api/users", usersRouter);
 app.use("/api/orders", orderRouter);
-// inna konwencja nazewnicza
-app.use("/api/event_tickets", router);
 //  LISTENER
 app.listen(PORT, () => {
     console.log(`Server is up and running on port ${PORT}`);

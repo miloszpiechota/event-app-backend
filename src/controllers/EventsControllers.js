@@ -54,7 +54,6 @@ export const EventCreate = async (req = request, res = response) => {
 };
 
 // Read Events
-// Read Events
 export const EventRead = async (req = request, res = response) => {
     try {
         const { id } = req.params; // Get the event ID from URL params
