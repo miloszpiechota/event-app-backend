@@ -6,18 +6,25 @@ env.config();
 
 const prisma = new PrismaClient(); // Initialize Prisma Client
 
+
 // CREATE Order
 export const OrderCreate = async (req = request, res = response) => {
     try {
-        const { data, total_amount, total_tax_amount, iduser } = req.body;
+        const { data, total_amount, total_tax_amount, iduser, order_tickets, payments } = req.body;
 
         const newOrder = await prisma.orders.create({
             data: {
                 data: new Date(data),
                 total_amount,
                 total_tax_amount,
-                iduser
-            }
+                iduser,
+                order_tickets: {
+                    create: order_tickets, // Zakładając, że order_tickets to tablica biletów
+                },
+                payments: {
+                    create: payments, // Zakładając, że payments to tablica metod płatności
+                },
+            },
         });
 
         return res.status(201).json({
@@ -33,6 +40,7 @@ export const OrderCreate = async (req = request, res = response) => {
         });
     }
 };
+
 
 // READ Orders
 export const OrderRead = async (req = request, res = response) => {

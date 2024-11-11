@@ -34,9 +34,17 @@ export const OrderTicketCreate = async (req = request, res = response) => {
 };
 
 // READ Order_tickets
+// OrderTicketRead.js
 export const OrderTicketRead = async (req = request, res = response) => {
     try {
-        const orderTickets = await prisma.order_tickets.findMany(); // Fetch all Order_tickets
+        const orderTickets = await prisma.order_tickets.findMany({
+            include: {
+                event_ticket: true, // Pobieranie powiązanych danych z Event_tickets
+                order: true,        // Pobieranie powiązanych danych z Orders
+                
+            },
+        });
+
         return res.status(200).json({
             success: true,
             msg: "Order tickets retrieved",
@@ -50,6 +58,7 @@ export const OrderTicketRead = async (req = request, res = response) => {
         });
     }
 };
+
 
 // UPDATE Order_ticket
 export const OrderTicketUpdate = async (req = request, res = response) => {

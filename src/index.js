@@ -31,7 +31,7 @@ import orderRouter from "./routes/OrderRoutes";
 // RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
 const limiter = rateLimit({
  windowMs: 15 * 60 * 1000, //15 minutes
- max: 100,
+ max: 200,
  standardHeaders: true,
  legacyHeaders: false,
  message: "Too much pressing the screen please wait a while longer !!",
@@ -57,6 +57,10 @@ app.use(
   origin: "*",
  })
 )
+// app.use(cors({
+//   origin: 'http://localhost:5173', // Replace with your frontend URL
+//   credentials: true,  // Allow sending credentials like cookies or Authorization headers
+// }));
 
 app.use(
  helmet({

@@ -75,7 +75,7 @@ export const EventRead = async (req = request, res = response) => {
                     contact_info: true,
                     idevent_category: true,
                     idevent_location: true,
-                    status: true,
+                    //status: true,
                     is_seat_categorized: true
                 }
             });
@@ -93,7 +93,7 @@ export const EventRead = async (req = request, res = response) => {
                     contact_info: true,
                     idevent_category: true,
                     idevent_location: true,
-                    status: true,
+                    //status: true,
                     is_seat_categorized: true
                 }
             });
