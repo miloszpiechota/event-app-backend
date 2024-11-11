@@ -26,6 +26,7 @@
   "dependencies": {
     "@prisma/client": "^5.21.1",
     "@react-native-community/blur": "^4.4.1",
+    "babel-node": "^0.0.1-security",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
