@@ -21,7 +21,7 @@ export const EventCreate = async (req = request, res = response) => {
             contact_info,           
             idevent_category,       
             idevent_location,       
-            status
+            idstatus_type
         } = await req.body
 
     const createEvents = await EventModels.create({
@@ -35,7 +35,7 @@ export const EventCreate = async (req = request, res = response) => {
             contact_info,
             idevent_category,
             idevent_location,
-            status,
+            idstatus_type
         }
     })
 
@@ -74,7 +74,7 @@ export const EventRead = async (req = request, res = response) => {
                     contact_info: true,
                     idevent_category: true,
                     idevent_location: true,
-                    status: true,
+                    idstatus_type: true,
                     is_seat_categorized: true
                 }
             });
@@ -92,7 +92,7 @@ export const EventRead = async (req = request, res = response) => {
                     contact_info: true,
                     idevent_category: true,
                     idevent_location: true,
-                    status: true,
+                    idstatus_type: true,
                     is_seat_categorized: true
                 }
             });
@@ -127,7 +127,7 @@ export const EventUpdate = async (req = request, res = response) => {
             contact_info,           
             idevent_category,       
             idevent_location,       
-            status
+            idstatus_type
         } = await req.body
 
         const checkId = await EventModels.findUnique({
@@ -157,7 +157,7 @@ export const EventUpdate = async (req = request, res = response) => {
                 contact_info: contact_info || checkId.contact_info,
                 idevent_category: idevent_category || checkId.idevent_category,
                 idevent_location: idevent_location || checkId.idevent_location,
-                status: status || checkId.status,
+                idstatus_type: idstatus_type || checkId.idstatus_type,
             }
         })
 
