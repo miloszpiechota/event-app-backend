@@ -43,12 +43,12 @@ model Events {
     contact_info            String              @db.VarChar(256)
     idevent_category        Int
     idevent_location        Int
-    idstatus_type           Int                 
+    idstatus_type           Int?               
     is_seat_categorized     Boolean             // Nowe pole typu Boolean
     event_category          Event_categories    @relation(fields: [idevent_category], references: [idevent_category])
     event_location          Event_locations     @relation(fields: [idevent_location], references: [idevent_location])
     event_tickets           Event_tickets[]
-    status_type             Status_type          @relation(fields: [idstatus_type], references: [idstatus_type]) // Relacja do StatusType
+    status_type             Status_type?          @relation(fields: [idstatus_type], references: [idstatus_type]) // Relacja do StatusType
     comments                Comments[]
     favourite_events        Favourite_events[]
 }

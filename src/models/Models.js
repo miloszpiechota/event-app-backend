@@ -7,3 +7,4 @@ export const PaymentMethodModels = new PrismaClient().payment_methods
 export const CommentsModels = new PrismaClient().comments
 export const UserTypesModels = new PrismaClient().user_types
 export const OrdersModelss = new PrismaClient().orders
+export const StatusModels = new PrismaClient().status_type
