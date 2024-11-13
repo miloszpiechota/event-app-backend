@@ -27,7 +27,7 @@ import EventTickets from "./routes/EventTicketRoutes";
 import usersRouter from "./routes/UsersRoutes";
 import orderRouter from "./routes/OrderRoutes"; 
 import router from "./routes/EventTicketRoutes";
-
+import SendTicketInfo from "./routes/SendTicketInfo";
 
 // RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
 const limiter = rateLimit({
@@ -58,10 +58,10 @@ app.use(
   origin: "*",
  })
 )
-// app.use(cors({
-//   origin: 'http://localhost:5173', // Replace with your frontend URL
-//   credentials: true,  // Allow sending credentials like cookies or Authorization headers
-// }));
+app.use(cors({
+  origin: 'http://localhost:5173', // Replace with your frontend URL
+  credentials: true,  // Allow sending credentials like cookies or Authorization headers
+}));
 
 app.use(
  helmet({
@@ -94,6 +94,7 @@ app.use("/api/locations", LocationsRoutes);
 app.use("/api/event_tickets", EventTickets);
 app.use("/api/users", usersRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api/send-ticket-info", SendTicketInfo)
 
 //  LISTENER
 app.listen(PORT, () => {
