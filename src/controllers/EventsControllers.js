@@ -213,3 +213,29 @@ export const EventDelete = async (req = request, res = response) => {
         })
     }
 }
+
+export const EventSearch = async (req = request, res = response) => {
+    try {
+        const { name } = req.query
+
+        const searchEvents = await EventsModels.findMany({
+            where: {
+                name: {
+                    contains: name
+                }
+            }
+        })
+
+        res.status(200).json({
+            success: true,
+            msg: "Successfully search event!",
+            event: searchEvents,
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message,
+        })
+    }
+}
