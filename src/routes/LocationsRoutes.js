@@ -1,7 +1,8 @@
 // LocationsRoutes.js
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-
+import { authorizeRole } from "../middlewares/roleMiddleware";
+import { authCheck } from "../middlewares/AuthCheck";
 const router = Router();
 const prisma = new PrismaClient();
 

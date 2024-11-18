@@ -28,7 +28,7 @@ import usersRouter from "./routes/UsersRoutes";
 import orderRouter from "./routes/OrderRoutes"; 
 import router from "./routes/EventTicketRoutes";
 import SendTicketInfo from "./routes/SendTicketInfo";
-
+import { authorizeRole } from "./middlewares/roleMiddleware";
 // RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
 const limiter = rateLimit({
  windowMs: 15 * 60 * 1000, //15 minutes
@@ -37,6 +37,7 @@ const limiter = rateLimit({
  legacyHeaders: false,
  message: "Too much pressing the screen please wait a while longer !!",
 })
+
 
 //  MIDDLEWARE
 app.use((req, res, next) => {
@@ -97,6 +98,6 @@ app.use("/api/orders", orderRouter);
 app.use("/api/send-ticket-info", SendTicketInfo)
 
 //  LISTENER
-app.listen(PORT, () => {
-    console.log(`Server is up and running on port ${PORT}`);
-  });
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is up and running on port ${PORT}`);
+});
