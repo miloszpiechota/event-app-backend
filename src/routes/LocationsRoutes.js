@@ -6,7 +6,7 @@ const router = Router();
 const prisma = new PrismaClient();
 
 router.get("/read", async (req, res) => {
-    console.log("Fetching locations...");
+    //console.log("Fetching locations...");
     try {
         // Pobieramy lokalizacje wraz z miastami i krajami
         const event_locations = await prisma.event_locations.findMany({
@@ -19,22 +19,22 @@ router.get("/read", async (req, res) => {
             }
         });
 
-        console.log("event_locations found:", event_locations);
+        //console.log("event_locations found:", event_locations);
         res.status(200).json(event_locations);
     } catch (error) {
-        console.error("Error fetching event_locations:", error);
+        //console.error("Error fetching event_locations:", error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
 router.get("/read/:id", async (req, res) => {
-    console.log("Fetching location...");
+    //console.log("Fetching location...");
     const { id } = req.params;
 
     // Sprawdzenie, czy id jest liczbą
     const locationId = parseInt(id);
     if (isNaN(locationId)) {
-        console.error("Invalid location ID");
+        //console.error("Invalid location ID");
         return res.status(400).json({ success: false, error: "Invalid location ID" });
     }
 
