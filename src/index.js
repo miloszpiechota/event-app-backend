@@ -3,6 +3,8 @@ import cors from "cors"
 import env from "dotenv"
 import path from "path"
 import helmet from "helmet"
+import "core-js/stable/atob";
+
 env.config()
 require('dotenv').config();
 

@@ -2,7 +2,7 @@ import { response, request, query } from "express";
 import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import env from "dotenv";
-import cryptoJs from "crypto-js";
+
 import { UsersModels } from "../models/Models";
 import { connect } from "http2";
 import userTypes from "../config/userTypes";
@@ -55,12 +55,13 @@ export const UsersCreate = async (req = request, res = response) => {
       },
     });
 
-    const token = await jwt.sign(
+    const token = jwt.sign(
       {
         app_name: "inzynierka",
         id: createUsers.iduser,
         email: createUsers.email,
         username: createUsers.username,
+        iduser_type: createUsers.iduser_type,
       },
       process.env.API_SECRET,
       {
@@ -68,15 +69,13 @@ export const UsersCreate = async (req = request, res = response) => {
       }
     );
 
-    const hashToken = await cryptoJs.AES.encrypt(
-      token,
-      process.env.API_SECRET
-    ).toString();
+    // Usuń szyfrowanie tokena
+    // const hashToken = cryptoJs.AES.encrypt(token, process.env.API_SECRET).toString();
 
     res.status(201).json({
       success: true,
-      msg: "Successfully created users!",
-      token: hashToken,
+      msg: "Successfully created user!",
+      token: token, // Zwróć token bezpośrednio
     });
   } catch (error) {
     res.status(500).json({
@@ -90,6 +89,13 @@ export const UsersCreate = async (req = request, res = response) => {
 export const UsersLogin = async (req = request, res = response) => {
   try {
     const { email, password } = req.body;
+     // Walidacja danych wejściowych
+     if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        msg: "Email and password are required!",
+      });
+    }
 
     const Usercheck = await UsersModels.findFirst({
       where: { email },
@@ -98,16 +104,18 @@ export const UsersLogin = async (req = request, res = response) => {
     if (!Usercheck) {
       return res.status(401).json({
         success: false,
-        msg: "Email not found!",
+        msg: "Invalid email or password!",
       });
+      
     }
 
     const comparePassword = bcryptjs.compareSync(password, Usercheck.password);
     if (!comparePassword) {
       return res.status(401).json({
         success: false,
-        msg: "Incorrect password!",
+        msg: "Invalid email or password!",
       });
+      
     }
 
     const token = jwt.sign(
@@ -117,20 +125,23 @@ export const UsersLogin = async (req = request, res = response) => {
         email: Usercheck.email,
         iduser_type: Usercheck.iduser_type,
       },
+      //podpisanie tokena
       process.env.API_SECRET,
       { expiresIn: "10d" }
     );
 
-    const hashToken = cryptoJs.AES.encrypt(token, process.env.API_SECRET).toString();
+    // Usuń szyfrowanie tokena
+    // const hashToken = cryptoJs.AES.encrypt(token, process.env.API_SECRET).toString();
 
     res.status(200).json({
       success: true,
-      token: hashToken,
+      token: token, // Zwróć token bezpośrednio
     });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: "An unexpected error occurred. Please try again.",
     });
   }
 };
@@ -167,15 +178,11 @@ export const UsersRead = async (req = request, res = response) => {
 //      USER READ ONE (for user or admin/moderator)
 export const UserRead = async (req = request, res = response) => {
   try {
-    const { id } = req.params; 
-    const token = await req.headers["authorization"];
-    //deszyfrowanie tokenu JWT
-    const decToken = await cryptoJs.AES.decrypt(
-      token.split(" ")[1],
-      process.env.API_SECRET
-    ).toString(cryptoJs.enc.Utf8);
-    //rozkodowanie tokenu JWT
-    const verify = await jwt.verify(decToken, process.env.API_SECRET);
+    const { id } = req.params;
+
+    // Zakładamy, że 'authCheck' ustawia 'req.user'
+    const userIdFromToken = req.user.id;
+
     // Sprawdzenie, czy użytkownik istnieje
     const user = await UsersModels.findUnique({
       where: {
@@ -189,15 +196,17 @@ export const UserRead = async (req = request, res = response) => {
         message: "User ID not found!",
       });
     }
-    //sprawdzenie czy id z tokenu pokrywa się z id z zapytania
-    if(parseInt(id) !== verify.id){
+
+    // Sprawdzenie, czy id z tokenu pokrywa się z id z zapytania
+    if (parseInt(id) !== userIdFromToken) {
       return res.status(403).json({ error: "Access denied" });
     }
+
     res.status(200).json({
       success: true,
       message: "Successfully selected user!",
       user: user,
-    })
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -205,6 +214,7 @@ export const UserRead = async (req = request, res = response) => {
     });
   }
 };
+
 
 //      USERS UPDATE
 
@@ -324,52 +334,55 @@ export const UsersDelete = async (req = request, res = response) => {
 export const UserAuth = async (req = request, res = response) => {
   try {
     const token = req.headers.authorization;
-    if (!token) {
+    if (!token || !token.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
-        msg: "Login first to get tokens?",
+        msg: "Please log in to access this resource.",
       });
     }
-
+  
     const bearer = token.split(" ")[1];
-    const decToken = cryptoJs.AES.decrypt(bearer, process.env.API_SECRET).toString(cryptoJs.enc.Utf8);
-    const verify = jwt.verify(decToken, process.env.API_SECRET);
-
-    if (!verify) {
-      return res.status(401).json({
-        success: false,
-        msg: "Invalid token.",
-      });
-    }
-
-    if (verify.exp < Date.now() / 1000) {
-      return res.status(401).json({
-        success: false,
-        msg: "Token expired.",
-      });
-    }
-
+  
+    const verify = jwt.verify(bearer, process.env.API_SECRET);
+  
+    // Nie ma potrzeby sprawdzania `verify`, ponieważ jeśli token jest nieważny, funkcja rzuci wyjątek.
+  
+    // Pobranie danych użytkownika
     const getUserData = await UsersModels.findUnique({
       where: { iduser: parseInt(verify.id) },
     });
-
+  
     if (!getUserData) {
       return res.status(404).json({
         success: false,
         msg: "User not found!",
       });
     }
-
-    const { password, ...userWithoutPassword } = getUserData; // Remove password from response
-
+  
+    const { password, ...userWithoutPassword } = getUserData;
+  
     return res.status(200).json({
       success: true,
       user: userWithoutPassword,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    if (error.name === "JsonWebTokenError") {
+      return res.status(401).json({
+        success: false,
+        msg: "Invalid token.",
+      });
+    } else if (error.name === "TokenExpiredError") {
+      return res.status(401).json({
+        success: false,
+        msg: "Token expired.",
+      });
+    } else {
+      console.error("Authentication error:", error);
+      return res.status(500).json({
+        success: false,
+        error: "Internal server error.",
+      });
+    }
   }
+  
 };

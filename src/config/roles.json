@@ -37,9 +37,7 @@
                     "create",
                     "read"
                 ],
-                "events": [
-                    "read"
-                ],
+                
                 "payments": [
                     "create",
                     "read"
@@ -47,6 +45,9 @@
                 "users": [
                     "read_self",
                     "update_self"
+                ],
+                "events": [
+                    "read"
                 ]
             }
         },
@@ -89,7 +90,8 @@
                 "users": [
                     "read_self",
                     "update_self"
-                ]
+                ],
+                "orders": ["read"]
             }
         },
         {

@@ -1,32 +1,34 @@
-const Role = require("../models/role");
 const Permissions = require("../models/permissions");
-import userTypes from "../config/userTypes";
+const userTypes = require("../config/userTypes");
 
 // Check if the user has the required permission for a route
 export const checkPermission = (resource, action) => {
   return async (req, res, next) => {
     try {
-      //
-      const iduser_type = req.user ? req.user.iduser_type : 0;
-      console.log(iduser_type);
-      const userRole = userTypes.get(iduser_type);
-      
-      // Assuming this can be asynchronous
-      const userPermissions = await new Permissions().getPermissionsByRoleAndResource(
-        userRole,
+      const iduser_type = req.user ? req.user.iduser_type : null;
+      if (!iduser_type) {
+        return res.status(401).json({ error: "Nieautoryzowany dostęp" });
+      }
+
+      const userRoleName = userTypes.get(iduser_type);
+      if (!userRoleName) {
+        return res.status(403).json({ error: "Nieznana rola użytkownika" });
+      }
+
+      const permissions = new Permissions();
+      const userPermissions = permissions.getPermissionsByRoleAndResource(
+        userRoleName,
         resource
       );
-      
+
       if (userPermissions.includes(action)) {
-        return next(); // Proceed to the next middleware/route handler
+        return next(); // Użytkownik ma uprawnienia
       } else {
-        console.log(userPermissions);
-        return res.status(403).json({ error: "Access denied" }); // Deny access
+        return res.status(403).json({ error: "Dostęp zabroniony" });
       }
     } catch (error) {
-      // Handle any errors that occur during permission check
-      console.error('Error checking permissions:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+      console.error('Błąd podczas sprawdzania uprawnień:', error);
+      return res.status(500).json({ error: 'Wewnętrzny błąd serwera' });
     }
   };
 };
