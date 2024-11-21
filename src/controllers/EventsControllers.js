@@ -7,7 +7,7 @@ import { EventsModels } from "../models/Models";
 env.config();
 
 const salt = bcryptjs.genSaltSync(10);
-var counter = 0;
+
 // Create Event
 export const EventCreate = async (req = request, res = response) => {
   try {
@@ -96,13 +96,10 @@ export const EventRead = async (req = request, res = response) => {
         },
       });
     }
-    counter++;
-    console.log("sending events, counter: "+counter);
     res.status(200).json({
       success: true,
       msg: "Successfully read event(s)!",
       event: readEvents,
-      counter: counter
     });
   } catch (error) {
     console.log("error while sending events");
