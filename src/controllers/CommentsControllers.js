@@ -45,30 +45,34 @@ export const CommentsCreate = async (req = request, res = response) => {
 
 // Read Comments
 export const CommentsRead = async (req = request, res = response) => {
+    const { idevent } = req.query; // Pobiera idevent z zapytania
+  
     try {
-        const readComments = await CommentsModels.findMany({
-            select: {
-                idcomment: true,
-                idevent: true,
-                comment: true,
-                iduser: true,
-                date_comment: true
-            }
-        })
-
-        res.status(200).json({
-            success: true,
-            msg: "Successfully read comments!",
-            comments: readComments,
-        })
-
+      const readComments = await CommentsModels.findMany({
+        where: {
+          idevent: parseInt(idevent),
+        },
+        select: {
+          idcomment: true,
+          idevent: true,
+          comment: true,
+          iduser: true,
+          date_comment: true,
+        },
+      });
+  
+      res.status(200).json({
+        success: true,
+        msg: "Successfully read comments!",
+        comments: readComments,
+      });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: error.message,
-        })
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
     }
-}
+  };
 
 // Delete Comments
 export const CommentsDelete = async (req = request, res = response) => {

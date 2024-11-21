@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import env from "dotenv";
 import cryptoJs from "crypto-js";
-import { EventsModels } from "../models/Models";
+import { EventLocationsModels, EventsModels } from "../models/Models";
 env.config();
 
 const salt = bcryptjs.genSaltSync(10);
@@ -21,7 +21,7 @@ export const EventCreate = async (req = request, res = response) => {
       contact_info,
       idevent_category,
       idevent_location,
-      status,
+      idstatus_type,
     } = await req.body;
 
     const createEvents = await EventModels.create({
@@ -35,7 +35,7 @@ export const EventCreate = async (req = request, res = response) => {
         contact_info,
         idevent_category,
         idevent_location,
-        status,
+        idstatus_type,
       },
     });
 
@@ -96,13 +96,13 @@ export const EventRead = async (req = request, res = response) => {
         },
       });
     }
+
     res.status(200).json({
       success: true,
       msg: "Successfully read event(s)!",
       event: readEvents,
     });
   } catch (error) {
-    console.log("error while sending events");
     res.status(500).json({
       success: false,
       error: error.message,
@@ -124,7 +124,7 @@ export const EventUpdate = async (req = request, res = response) => {
       contact_info,
       idevent_category,
       idevent_location,
-      status,
+      idstatus_type,
     } = await req.body;
 
     const checkId = await EventModels.findUnique({
@@ -154,7 +154,7 @@ export const EventUpdate = async (req = request, res = response) => {
         contact_info: contact_info || checkId.contact_info,
         idevent_category: idevent_category || checkId.idevent_category,
         idevent_location: idevent_location || checkId.idevent_location,
-        status: status || checkId.status,
+        idstatus_type: idstatus_type || checkId.idstatus_type,
       },
     });
 
@@ -201,6 +201,120 @@ export const EventDelete = async (req = request, res = response) => {
       event: result,
     });
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const EventSearch = async (req = request, res = response) => {
+  try {
+    const { name } = req.query;
+
+    const searchEvents = await EventsModels.findMany({
+      where: {
+        name: {
+          contains: name,
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      msg: "Successfully search event!",
+      event: searchEvents,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const EventReadIdCity = async (req = request, res = response) => {
+  try {
+    const { idCity } = req.params; // Get the event ID from URL params
+
+    // Fetch all events if no ID is provided
+    const readLocations = await EventLocationsModels.findMany({
+      where: { idcity: parseInt(idCity) },
+      select: {
+        idevent_location: true,
+        name: true,
+        idcity: true,
+      },
+    });
+
+    const locationIds = readLocations.map(
+      (location) => location.idevent_location
+    );
+    let readEvents = await EventsModels.findMany({
+      where: { idevent_location: { in: locationIds } },
+      select: {
+        idevent: true,
+        name: true,
+        start_date: true,
+        end_date: true,
+        description: true,
+        number_of_ticket: true,
+        photo: true,
+        contact_info: true,
+        idevent_category: true,
+        idevent_location: true,
+        idstatus_type: true,
+        is_seat_categorized: true,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      msg: "Successfully read event(s)!",
+      event: readEvents,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const GetEventsByDateRange = async (req = request, res = response) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({
+        success: false,
+        msg: "Missing startDate or endDate in query parameters.",
+      });
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const readEvents = await EventsModels.findMany({
+      where: {
+        AND: [{ start_date: { gte: start } }, { end_date: { lte: end } }],
+      },
+    });
+
+    if (!readEvents || readEvents.length === 0) {
+      return res.status(404).json({
+        success: false,
+        msg: "No events found in the specified date range.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      msg: "Successfully fetched events.",
+      events: readEvents,
+    });
+  } catch (error) {
+    console.error("Error fetching events by date range:", error);
     res.status(500).json({
       success: false,
       error: error.message,
