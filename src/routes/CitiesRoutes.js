@@ -22,23 +22,13 @@ const prisma = new PrismaClient();
 // });
 
 router.get("/read", async (req, res) => {
-<<<<<<< HEAD
     //console.log("Fetching cities...");
-=======
->>>>>>> origin/mateusz
     try {
         const cities = await prisma.cities.findMany({
             include: {
                 country: true, // Opcjonalnie, jeśli chcesz dołączyć informacje o kraju
             },
         });
-<<<<<<< HEAD
-        //console.log("Cities found:", cities);
-        res.status(200).json(cities);
-    } catch (error) {
-        //console.error("Error fetching cities:", error);
-        res.status(500).json({ success: false, error: error.message });
-=======
 
         return res.status(200).json({
             success: true,
@@ -52,7 +42,6 @@ router.get("/read", async (req, res) => {
             msg: "Internal Server Error",
             error: error.message,
         });
->>>>>>> origin/mateusz
     }
 });
 
