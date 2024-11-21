@@ -28,10 +28,7 @@ router.get("/read", async (req, res) => {
 });
 
 router.get("/read/:id", async (req, res) => {
-<<<<<<< HEAD
     //console.log("Fetching location...");
-=======
->>>>>>> origin/mateusz
     const { id } = req.params;
 
     // Sprawdzenie, czy id jest liczbą
