@@ -58,6 +58,32 @@ export const PaymentMethodRead = async (req = request, res = response) => {
     }
 }
 
+//     READ PaymentMethod by ID
+export const PaymentMethodReadById = async (req = request, res = response) => {
+    try {
+        const { id } = req.params
+
+        const readPaymentMethod = await PaymentMethodModels.findUnique({
+            where: {
+                idpayment_method: parseInt(id),
+            }
+        })
+
+        return res.status(200).json({
+            success: true,
+            msg: "PaymentMethod read",
+            data: readPaymentMethod,
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: "Internal Server Error",
+            error: error,
+        })
+    }
+}
+
 //     UPDATE PaymentMethod
 
 export const PaymentMethodUpdate = async (req = request, res = response) => {
