@@ -18,30 +18,45 @@ export const CommentsCreate = async (req = request, res = response) => {
             comment,
             iduser,
             idevent,
-            date_comment = new Date() // Default to current date if not provided
-        } = req.body
+            date_comment = new Date(), // Domyślna data
+        } = req.body;
 
+        // Walidacja danych wejściowych
+        if (!comment || !iduser || !idevent) {
+            return res.status(400).json({
+                success: false,
+                error: "All fields (comment, iduser, idevent) are required.",
+            });
+        }
+
+        // Tworzenie komentarza
         const createComments = await CommentsModels.create({
             data: {
                 comment,
-                iduser,
-                idevent,
-                date_comment
-            }
-        })
+                date_comment,
+                event: {
+                    connect: { idevent: parseInt(idevent) }, // Łączenie z istniejącym wydarzeniem
+                },
+                user: {
+                    connect: { iduser: parseInt(iduser) }, // Łączenie z istniejącym użytkownikiem
+                },
+            },
+        });
+
         res.status(201).json({
             success: true,
             msg: "Successfully added comment!",
             comment: createComments,
-        })
-
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
             error: error.message,
-        })
+        });
     }
-}
+};
+
+
 
 // Read Comments
 export const CommentsRead = async (req = request, res = response) => {
