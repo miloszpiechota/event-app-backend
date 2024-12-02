@@ -9,3 +9,4 @@ export const UserTypesModels = new PrismaClient().user_types
 export const OrdersModelss = new PrismaClient().orders
 export const StatusModels = new PrismaClient().status_type
 export const EventLocationsModels = new PrismaClient().event_locations
+export const OrderTicketModels = new PrismaClient().order_tickets

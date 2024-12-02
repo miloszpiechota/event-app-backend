@@ -5,7 +5,7 @@ import env from "dotenv";
 import cryptoJs from "crypto-js";
 import { UsersModels } from "../models/Models";
 import { connect } from "http2";
-import userTypes from "../config/userTypes";
+// import userTypes from "../config/userTypes";
 import { body, validationResult } from 'express-validator';
 
 env.config();
@@ -126,6 +126,7 @@ export const UsersLogin = async (req = request, res = response) => {
     res.status(200).json({
       success: true,
       token: hashToken,
+      iduser: Usercheck.iduser
     });
   } catch (error) {
     res.status(500).json({

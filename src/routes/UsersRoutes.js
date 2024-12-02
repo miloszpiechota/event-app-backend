@@ -10,7 +10,8 @@ import {
   UserAuth,
 } from "../controllers/UsersControllers";
 import { authCheck } from "../middlewares/AuthCheck"; // Import your auth middleware
-import { checkPermission } from "../middlewares/rbacMiddleware"; // Adjust the path as necessary
+const checkPermission = require('../middlewares/checkPermission');
+import { UserTypesModels } from "../models/Models";
 
 const users_controllers = express.Router();
 
@@ -35,14 +36,20 @@ users_controllers.put("/update/:id", authCheck, checkPermission('users', 'update
 users_controllers.delete("/delete/:id", authCheck, checkPermission('users', 'delete'), UsersDelete);
 users_controllers.get("/auth", authCheck, UserAuth);
 
-// Sample hello world route
-users_controllers.get("/hello", authCheck, (req, res) => {
-  res.send("Hello World");
-});
+users_controllers.get("/types/read", authCheck, async (req, res) =>{
+  try {
+    const user_types = await UserTypesModels.findMany();
 
-// Sample lorem route
-users_controllers.get("/lorem", authCheck, (req, res) => {
-  res.send("Lorem ipsum dolor sit amet...");
-});
+    if (!user_types) {
+       
+        return res.status(404).json({ success: false, error: "user_types not found" });
+    }
 
+   
+    res.status(200).json({ success: true, data: { user_types: user_types } });  
+} catch (error) {
+  
+    res.status(500).json({ success: false, error: "Internal server error" });
+}
+})
 export default users_controllers;

@@ -5,7 +5,7 @@ import env from "dotenv";
 import cryptoJs from "crypto-js";
 import { StatusModels } from "../models/Models";
 import { connect } from "http2";
-import userTypes from "../config/userTypes";
+// import userTypes from "../config/userTypes";
 import { body, validationResult } from 'express-validator';
 
 env.config()

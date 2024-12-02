@@ -2,7 +2,8 @@ import express from "express"
 import { GetEventsByDateRange, EventReadIdCity, EventCreate, EventRead, EventUpdate, EventDelete, EventSearch} from "../controllers/EventsControllers"
 const event_controllers = express.Router()
 import { authCheck } from "../middlewares/AuthCheck"
-import { checkPermission } from "../middlewares/rbacMiddleware"; // Adjust the path as necessary
+const checkPermission = require('../middlewares/checkPermission');
+
 
 
 //      CREATE EVENT ROUTES

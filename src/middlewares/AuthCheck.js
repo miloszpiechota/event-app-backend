@@ -8,7 +8,8 @@ export const authCheck = async (req, res, next) => {
   try {
     // Extract the authorization header from the request
     const token = req.headers["authorization"];
-
+    console.log("1");
+    console.log(token);
     // Check if the token exists and starts with "Bearer "
     if (!token || !token.startsWith("Bearer ")) {
       return res.status(401).json({
@@ -36,6 +37,8 @@ export const authCheck = async (req, res, next) => {
 
     // Attach the verified user data to the request object
     req.user = verify; // You can access user data via req.user in subsequent middlewares/routes
+    console.log("2");
+
     next(); // Proceed to the next middleware or route handler
   } catch (error) {
     console.error(error);
