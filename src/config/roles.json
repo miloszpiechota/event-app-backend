@@ -2,6 +2,7 @@
     "roles": [
         {
             "name": "admin",
+            "iduser_type": 2,
             "permissions": {
                 "comments": [
                     "create",
@@ -27,11 +28,28 @@
                     "read_self",
                     "update",
                     "delete"
+                ],
+                "orders": [
+                    "create",
+                    "read",
+                    "read_self",
+                    "update",
+                    "delete"
                 ]
-            }
+            },
+            "privliges":[
+                "user_panel",
+                "users_manager_panel",
+                "event_creator_panel",
+                "events_manager_panel",
+                "admin_panel",
+                "event_validate_panel"
+            ]
+            
         },
         {
             "name": "user",
+            "iduser_type": 1,
             "permissions": {
                 "comments": [
                     "create",
@@ -47,11 +65,20 @@
                 "users": [
                     "read_self",
                     "update_self"
+                ],
+                "orders": [
+                    "create",
+                    "read_self",
+                    "delete"
                 ]
-            }
+            },
+            "privliges":[
+                "user_panel"
+            ]
         },
         {
             "name": "events_creator",
+            "iduser_type": 3,
             "permissions": {
                 "comments": [
                     "create",
@@ -69,11 +96,25 @@
                 "users": [
                     "read_self",
                     "update_self"
+                ],
+                "orders": [
+                    "create",
+                    "read",
+                    "read_self",
+                    "update",
+                    "delete"
                 ]
-            }
+            },
+            "privliges":[
+                "user_panel",
+                "users_manager_panel",
+                "event_creator_panel",
+                "event_validate_panel"
+            ]
         },
         {
             "name": "events_ticket_validator",
+            "iduser_type": 4,
             "permissions": {
                 "comments": [
                     "create",
@@ -89,11 +130,22 @@
                 "users": [
                     "read_self",
                     "update_self"
+                ],
+                "orders": [
+                    "create",
+                    "read",
+                    "read_self",
+                    "update"
                 ]
-            }
+            },
+            "privliges":[
+                "user_panel",
+                "event_validate_panel"
+            ]
         },
         {
             "name": "moderator",
+            "iduser_type": 5,
             "permissions": {
                 "comments": [
                     "create",
@@ -116,8 +168,23 @@
                     "read_self",
                     "update",
                     "update_self"
+                ],
+                "orders": [
+                    "create",
+                    "read",
+                    "read_self",
+                    "update",
+                    "delete"
                 ]
-            }
+            },
+            "privliges":[
+                "user_panel",
+                "users_manager_panel",
+                "event_creator_panel",
+                "events_manager_panel",
+                "admin_panel",
+                "event_validate_panel"
+            ]
         }
     ]
 }
