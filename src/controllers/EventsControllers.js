@@ -5,10 +5,55 @@ import env from "dotenv";
 import cryptoJs from "crypto-js";
 import { EventLocationsModels, EventsModels } from "../models/Models";
 env.config();
-
+const URL = 'http://localhost:3000';
 const salt = bcryptjs.genSaltSync(10);
 
 // Create Event
+// export const EventCreate = async (req = request, res = response) => {
+//   try {
+//     const {
+//       name,
+//       start_date,
+//       end_date,
+//       description,
+//       number_of_ticket,
+//       photo,
+//       contact_info,
+//       idevent_category,
+//       idevent_location,
+//       idstatus_type,
+//     } = await req.body;
+
+//     const createEvents = await EventModels.create({
+//       data: {
+//         name,
+//         start_date,
+//         end_date,
+//         description,
+//         number_of_ticket,
+//         photo,
+//         contact_info,
+//         idevent_category,
+//         idevent_location,
+//         idstatus_type,
+//       },
+//     });
+
+//     res.status(201).json({
+//       success: true,
+//       msg: "Successfully added event!",
+//       event: createEvents,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: error.message,
+//     });
+//   }
+// };
+
+
+
 export const EventCreate = async (req = request, res = response) => {
   try {
     const {
@@ -22,36 +67,85 @@ export const EventCreate = async (req = request, res = response) => {
       idevent_category,
       idevent_location,
       idstatus_type,
-    } = await req.body;
+      custom_location_name,
+      city_id,
+    } = req.body;
+    console.log(req.body);
+    let locationId = idevent_location;
 
-    const createEvents = await EventModels.create({
+    // Dodaj nową lokalizację, jeśli podano `custom_location_name` i `city_id`, ale brak `idevent_location`
+    if (custom_location_name && city_id && !idevent_location) {
+      try {
+        // Dodaj lokalizację
+        const locationResponse = await axios.post(`${URL}/api/locations/create`, {
+          name: custom_location_name,
+          city_id,
+        });
+
+        if (locationResponse.data && locationResponse.data.success) {
+          // Wyciągnij `idevent_location` nowo dodanej lokalizacji
+          const locationIdResponse = await axios.get(
+            `${URL}/api/locations/read-by-name`,
+            {
+              params: {
+                name: custom_location_name,
+                city_id,
+              },
+            }
+          );
+
+          if (locationIdResponse.data && locationIdResponse.data.success) {
+            locationId = locationIdResponse.data.location.idevent_location;
+          } else {
+            return res.status(400).json({
+              success: false,
+              error: "Failed to fetch the newly created location ID.",
+            });
+          }
+        } else {
+          return res.status(400).json({
+            success: false,
+            error: "Failed to create a new location.",
+          });
+        }
+      } catch (error) {
+        console.error("Error creating location or fetching its ID:", error);
+        return res.status(500).json({
+          success: false,
+          error: "Internal Server Error while creating location or fetching its ID.",
+        });
+      }
+    }
+
+    // Tworzenie wydarzenia w bazie danych
+    const newEvent = await prisma.events.create({
       data: {
         name,
-        start_date,
-        end_date,
+        start_date: new Date(start_date),
+        end_date: end_date ? new Date(end_date) : null,
         description,
-        number_of_ticket,
+        number_of_ticket: parseInt(number_of_ticket),
         photo,
         contact_info,
-        idevent_category,
-        idevent_location,
-        idstatus_type,
+        idevent_category: idevent_category ? parseInt(idevent_category) : null,
+        idevent_location: locationId,
+        idstatus_type: idstatus_type ? parseInt(idstatus_type) : null,
       },
     });
 
     res.status(201).json({
       success: true,
-      msg: "Successfully added event!",
-      event: createEvents,
+      msg: "Successfully created event!",
+      event: newEvent,
     });
   } catch (error) {
+    console.error("Error creating event:", error);
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: "Internal Server Error",
     });
   }
 };
-
 
 
 // Read Events
