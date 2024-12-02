@@ -36,3 +36,22 @@ export const StatusReadById = async (req = request, res = response) => {
         })
     }
 }
+
+export const StatusReadAll = async (req = request, res = response) => { 
+    try {
+        const readStatusAll = await StatusModels.findMany()
+
+        return res.status(200).json({
+            success: true,
+            msg: "Status read all",
+            data: readStatusAll,
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: "Internal Server Error",
+            error: error,
+        })
+    }
+}

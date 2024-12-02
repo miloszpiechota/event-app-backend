@@ -72,4 +72,59 @@ router.get("/read/:id", async (req, res) => {
     }
 });
 
+// Pobierz ID lokalizacji po nazwie i mieście
+router.get("/read-by-name", async (req, res) => {
+    const { name, city_id } = req.query;
+
+    if (!name || !city_id) {
+        return res.status(400).json({ success: false, error: "Name and city_id are required" });
+    }
+
+    try {
+        const location = await prisma.event_locations.findFirst({
+            where: {
+                name,
+                idcity: parseInt(city_id),
+            },
+            select: {
+                idevent_location: true, // Pobieramy tylko ID lokalizacji
+            },
+        });
+
+        if (!location) {
+            return res.status(404).json({ success: false, error: "Location not found" });
+        }
+
+        res.status(200).json({ success: true, location });
+    } catch (error) {
+        console.error("Error fetching location by name:", error);
+        res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+});
+
+    
+
+router.post("/create", async (req, res) => {
+    const { name, city_id } = req.body;
+  
+    if (!name || !city_id) {
+      return res.status(400).json({ success: false, error: "Name and city_id are required" });
+    }
+  
+    try {
+      const newLocation = await prisma.event_locations.create({
+        data: {
+          name,
+          idcity: parseInt(city_id),
+        },
+      });
+  
+      res.status(201).json({ success: true, location: newLocation });
+    } catch (error) {
+      console.error("Error creating new location:", error);
+      res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+  });
+  
+
 export default router;
