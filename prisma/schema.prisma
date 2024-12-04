@@ -44,11 +44,11 @@ model Events {
     idevent_category        Int
     idevent_location        Int
     idstatus_type           Int?               
-    is_seat_categorized     Boolean             // Nowe pole typu Boolean
+    is_seat_categorized     Boolean             
     event_category          Event_categories    @relation(fields: [idevent_category], references: [idevent_category])
     event_location          Event_locations     @relation(fields: [idevent_location], references: [idevent_location])
     event_tickets           Event_tickets[]
-    status_type             Status_type?          @relation(fields: [idstatus_type], references: [idstatus_type]) // Relacja do StatusType
+    status_type             Status_type?        @relation(fields: [idstatus_type], references: [idstatus_type]) 
     comments                Comments[]
     favourite_events        Favourite_events[]
 }
@@ -118,7 +118,6 @@ model Payments {
     idorder                 Int
     idpayment_method        Int
     payment_status          String
-    //payment_amount        Double
     order                   Orders              @relation(fields: [idorder], references: [idorder])
     payment_method          payment_methods     @relation(fields: [idpayment_method], references: [idpayment_method])
 }
@@ -148,7 +147,7 @@ model Users {
     orders                  Orders[]
 }
 
-model User_types{
+model User_types {
     iduser_type             Int                 @id
     name_type               String              @db.VarChar(45)
     users                   Users[]
