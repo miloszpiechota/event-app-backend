@@ -8,29 +8,9 @@ require('dotenv').config();
 
 const app = express()
 const PORT = process.env.PORT;
-import users_controllers from "./routes/UsersRoutes"
-import paymentmethod_controllers from "./routes/PaymentMethodRoutes"
-import comments_controllers  from "./routes/CommentsRoutes"
-import events_controllers from "./routes/EventsRoutes"
-import { rateLimit } from "express-rate-limit"
-import categoryRoutes from "./routes/category";
-import CitiesRoutes from "./routes/CitiesRoutes"; 
-import LocationsRoutes from "./routes/LocationsRoutes";
-import EventTickets from "./routes/EventTicketRoutes";
-import usersRouter from "./routes/UsersRoutes";
-import orderRouter from "./routes/OrderRoutes"; 
-import status_controllers from "./routes/StatusRoutes";
-import router from "./routes/EventTicketRoutes";
-import rbac_controllers from "./routes/RBAC";
+import Routes from "./routes/Routes";
 
-// RATE LIMIT, THE PROCESS OF LIMITING THE NUMBER OF USER/CLIENT REQUSET ON CERTAIN RESOURCES
-const limiter = rateLimit({
- windowMs: 15 * 60 * 1000, //15 minutes
- max: 100,
- standardHeaders: true,
- legacyHeaders: false,
- message: "Too much pressing the screen please wait a while longer !!",
-})
+
 
 //  MIDDLEWARE
 app.use((req, res, next) => {
@@ -59,26 +39,14 @@ app.use(
  })
 )
 
-app.use(limiter)
 app.use(express.json({ limit: "100mb" }))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, "../static")))
 
 //  ROUTES
 
-app.use("/api", users_controllers)
-app.use("/api/payment", paymentmethod_controllers);
-app.use("/api/comments", comments_controllers);
-app.use("/api/users", users_controllers)
-app.use("/api/events", events_controllers)
-app.use("/api/categories", categoryRoutes);
-app.use("/api/cities", CitiesRoutes);
-app.use("/api/locations", LocationsRoutes);
-app.use("/api/event_tickets", EventTickets);
-app.use("/api/users", usersRouter);
-app.use("/api/orders", orderRouter);
-app.use("/api/status", status_controllers);
-app.use("/api/rbac", rbac_controllers);
+app.use("/api", Routes)
+
 //  LISTENER
 app.listen(PORT, () => {
     console.log(`Server is up and running on port ${PORT}`);

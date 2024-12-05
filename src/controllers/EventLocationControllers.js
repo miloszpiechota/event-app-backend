@@ -1,15 +1,20 @@
-// LocationsRoutes.js
-import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { response, request, query } from "express";
+import jwt from "jsonwebtoken";
+import bcryptjs from "bcryptjs";
+import env from "dotenv";
+import cryptoJs from "crypto-js";
+import { EventLocationsModels } from "../models/Models";
+import { connect } from "http2";
+// import userTypes from "../config/userTypes";
+import { body, validationResult } from "express-validator";
 
-const router = Router();
-const prisma = new PrismaClient();
+env.config();
 
-router.get("/read", async (req, res) => {
-    //console.log("Fetching locations...");
+const salt = bcryptjs.genSaltSync(10);
+export const EventLocationRead = async (req = request, res = response) => {
     try {
         // Pobieramy lokalizacje wraz z miastami i krajami
-        const event_locations = await prisma.event_locations.findMany({
+        const event_locations = await EventLocationsModels.findMany({
             include: {
                 city: {
                     include: {
@@ -25,9 +30,9 @@ router.get("/read", async (req, res) => {
         //console.error("Error fetching event_locations:", error);
         res.status(500).json({ success: false, error: error.message });
     }
-});
+};
 
-router.get("/read/:id", async (req, res) => {
+export const EventLocationReadById = async (req = request, res = response) =>{
     //console.log("Fetching location...");
     const { id } = req.params;
 
@@ -39,7 +44,7 @@ router.get("/read/:id", async (req, res) => {
     }
 
     try {
-        const location = await prisma.event_locations.findUnique({
+        const location = await EventLocationsModels.findUnique({
             where: {
                 idevent_location: locationId,  // Wyszukuje po `idevent_location`
             },
@@ -70,10 +75,10 @@ router.get("/read/:id", async (req, res) => {
         console.error("Error fetching location:", error);
         res.status(500).json({ success: false, error: "Internal server error" });
     }
-});
+};
 
 // Pobierz ID lokalizacji po nazwie i mieście
-router.get("/read-by-name", async (req, res) => {
+export const EventLocationReadByName = async (req = request, res = response) => {
     const { name, city_id } = req.query;
 
     if (!name || !city_id) {
@@ -81,7 +86,7 @@ router.get("/read-by-name", async (req, res) => {
     }
 
     try {
-        const location = await prisma.event_locations.findFirst({
+        const location = await EventLocationsModels.findFirst({
             where: {
                 name,
                 idcity: parseInt(city_id),
@@ -100,11 +105,11 @@ router.get("/read-by-name", async (req, res) => {
         console.error("Error fetching location by name:", error);
         res.status(500).json({ success: false, error: "Internal Server Error" });
     }
-});
+};
 
     
 
-router.post("/create", async (req, res) => {
+export const EventLocationCreate = async (req = request, res = response) =>  {
     const { name, city_id } = req.body;
   
     if (!name || !city_id) {
@@ -112,7 +117,7 @@ router.post("/create", async (req, res) => {
     }
   
     try {
-      const newLocation = await prisma.event_locations.create({
+      const newLocation = await EventLocationsModels.create({
         data: {
           name,
           idcity: parseInt(city_id),
@@ -124,7 +129,5 @@ router.post("/create", async (req, res) => {
       console.error("Error creating new location:", error);
       res.status(500).json({ success: false, error: "Internal Server Error" });
     }
-  });
+  };
   
-
-export default router;

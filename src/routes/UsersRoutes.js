@@ -8,12 +8,12 @@ import {
   UsersUpdate,
   UsersDelete,
   UserAuth,
+  UserTypesRead,
 } from "../controllers/UsersControllers";
 import { authCheck } from "../middlewares/AuthCheck"; // Import your auth middleware
 const checkPermission = require('../middlewares/checkPermission');
-import { UserTypesModels } from "../models/Models";
 
-const users_controllers = express.Router();
+const users_routes = express.Router();
 
 const LimitLogin = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -24,32 +24,15 @@ const LimitLogin = rateLimit({
 });
 
 //  Apply authCheck middleware to all routes that require authentication
-users_controllers.post("/create", UsersCreate);
-users_controllers.post("/login", UsersLogin, LimitLogin);
+users_routes.post("/create", UsersCreate);
+users_routes.post("/login", UsersLogin, LimitLogin);
 
 // Protect the following routes with authCheck middleware
-users_controllers.post("/read", authCheck, checkPermission('users', 'read'), UsersRead); // Read all users
-users_controllers.post("/read/:id", authCheck, checkPermission('users', 'read_self'), UserRead); // Read specific user
-users_controllers.post("/admin/read/:id", authCheck, checkPermission('users', 'read'), UserRead); // Read specific user
-
-users_controllers.put("/update/:id", authCheck, checkPermission('users', 'update_self'), UsersUpdate);
-users_controllers.delete("/delete/:id", authCheck, checkPermission('users', 'delete'), UsersDelete);
-users_controllers.get("/auth", authCheck, UserAuth);
-
-users_controllers.get("/types/read", authCheck, async (req, res) =>{
-  try {
-    const user_types = await UserTypesModels.findMany();
-
-    if (!user_types) {
-       
-        return res.status(404).json({ success: false, error: "user_types not found" });
-    }
-
-   
-    res.status(200).json({ success: true, data: { user_types: user_types } });  
-} catch (error) {
-  
-    res.status(500).json({ success: false, error: "Internal server error" });
-}
-})
-export default users_controllers;
+users_routes.post("/read", authCheck, checkPermission('users', 'read'), UsersRead); // Read all users
+users_routes.post("/read/:id", authCheck, checkPermission('users', 'read_self'), UserRead); // Read specific user
+users_routes.post("/admin/read/:id", authCheck, checkPermission('users', 'read'), UserRead); // Read specific user
+users_routes.put("/update/:id", authCheck, checkPermission('users', 'update_self'), UsersUpdate);
+users_routes.delete("/delete/:id", authCheck, checkPermission('users', 'delete'), UsersDelete);
+users_routes.get("/auth", authCheck, UserAuth);
+users_routes.get("/types/read", authCheck, UserTypesRead)
+export default users_routes;

@@ -7,9 +7,7 @@ import { CommentsModels } from "../models/Models"
 env.config()
 
 const salt = bcryptjs.genSaltSync(10)
-// let time = await prisma.time.create({
-//     data: { start: new Date(), end: null, something: 'something' },
-//   })
+
 
 // Create Comments
 export const CommentsCreate = async (req = request, res = response) => {

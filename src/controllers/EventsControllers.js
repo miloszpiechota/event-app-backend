@@ -118,7 +118,7 @@ export const EventCreate = async (req = request, res = response) => {
     }
 
     // Tworzenie wydarzenia w bazie danych
-    const newEvent = await prisma.events.create({
+    const newEvent = await EventsModels.create({
       data: {
         name,
         start_date: new Date(start_date),
@@ -223,7 +223,7 @@ export const EventUpdate = async (req = request, res = response) => {
       idstatus_type,
     } = await req.body;
 
-    const checkId = await EventModels.findUnique({
+    const checkId = await EventsModels.findUnique({
       where: {
         idevent: parseInt(id),
       },
@@ -236,7 +236,7 @@ export const EventUpdate = async (req = request, res = response) => {
       });
     }
 
-    const result = await EventModels.update({
+    const result = await EventsModels.update({
       where: {
         idevent: parseInt(id),
       },
@@ -272,7 +272,7 @@ export const EventDelete = async (req = request, res = response) => {
   try {
     const { id } = req.params;
 
-    const checkId = await EventModels.findUnique({
+    const checkId = await EventsModels.findUnique({
       where: {
         idevent: parseInt(id),
       },
@@ -285,7 +285,7 @@ export const EventDelete = async (req = request, res = response) => {
       });
     }
 
-    const result = await EventModels.delete({
+    const result = await EventsModels.delete({
       where: {
         idevent: parseInt(id),
       },
