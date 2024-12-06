@@ -4,13 +4,13 @@ const rolesConfig = require('../config/roles.json');
 class RBAC {
     constructor() {
         this.roles = rolesConfig.roles;
-        this.userTypes = new Map([
-            [1, 'user'],
-            [2, 'admin'],
-            [3, 'events_creator'],
-            [4, 'events_ticket_validator'],
-            [5, 'moderator']
-        ]);
+        this.userTypes = this.createUserTypesMap(this.roles);
+    }
+    
+    createUserTypesMap(roles) {
+        return new Map(
+            roles.map(role => [role.iduser_type, role.name])
+        );
     }
 
     getRoleName(iduser_type) {
@@ -38,3 +38,14 @@ class RBAC {
 }
 
 module.exports = RBAC;
+
+
+
+
+// this.userTypes = new Map([
+        //     [1, 'user'],
+        //     [2, 'admin'],
+        //     [3, 'events_creator'],
+        //     [4, 'events_ticket_validator'],
+        //     [5, 'moderator']
+        // ]);
