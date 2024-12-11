@@ -8,7 +8,6 @@ env.config()
 
 const salt = bcryptjs.genSaltSync(10)
 
-
 // Create Comments
 export const CommentsCreate = async (req = request, res = response) => {
     try {
@@ -18,7 +17,7 @@ export const CommentsCreate = async (req = request, res = response) => {
             idevent,
             date_comment = new Date(), // Domyślna data
         } = req.body;
-
+        console.log(date_comment);
         // Walidacja danych wejściowych
         if (!comment || !iduser || !idevent) {
             return res.status(400).json({
@@ -32,6 +31,7 @@ export const CommentsCreate = async (req = request, res = response) => {
             data: {
                 comment,
                 date_comment,
+                //date_comment: new Date().toISOString(), //dodałes toISOString podczas testów
                 event: {
                     connect: { idevent: parseInt(idevent) }, // Łączenie z istniejącym wydarzeniem
                 },

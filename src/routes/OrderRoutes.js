@@ -9,6 +9,5 @@ const orderRouter = express.Router();
 orderRouter.post("/", authCheck, createOrder);
 orderRouter.get("/read/user/:iduser", authCheck, checkPermission("orders", "read_self"), readUserOrders);
 orderRouter.get("/read/:idorder", authCheck, checkPermission("orders", "read_self"), readUserOrder);
-
 orderRouter.get("/read", authCheck, checkPermission("orders", "read"), readOrders)
 export default orderRouter;
