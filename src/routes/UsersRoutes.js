@@ -24,16 +24,21 @@ const LimitLogin = rateLimit({
 });
 
 //  Apply authCheck middleware to all routes that require authentication
+
 users_controllers.post("/create", UsersCreate);
 users_controllers.post("/login", UsersLogin, LimitLogin);
 
 // Protect the following routes with authCheck middleware
-users_controllers.post("/read", authCheck, checkPermission('users', 'read'), UsersRead); // Read all users
-users_controllers.post("/read/:id", authCheck, checkPermission('users', 'read_self'), UserRead); // Read specific user
-users_controllers.post("/admin/read/:id", authCheck, checkPermission('users', 'read'), UserRead); // Read specific user
+users_controllers.post("/read", authCheck, checkPermission('users', 'read'), UsersRead); 
+users_controllers.post("/read/:id", authCheck, checkPermission('users', 'read_self'), UserRead);
+users_controllers.post("/admin/read/:id", authCheck, checkPermission('users', 'read'), UserRead);
 
 users_controllers.put("/update/:id", authCheck, checkPermission('users', 'update_self'), UsersUpdate);
 users_controllers.delete("/delete/:id", authCheck, checkPermission('users', 'delete'), UsersDelete);
+
+
+
+
 users_controllers.get("/auth", authCheck, UserAuth);
 
 users_controllers.get("/types/read", authCheck, async (req, res) =>{
