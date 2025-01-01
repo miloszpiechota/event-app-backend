@@ -3,10 +3,10 @@ import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import env from "dotenv";
 import cryptoJs from "crypto-js";
-import { UsersModels } from "../models/Models";
+import { UsersModels, UserTypesModels } from "../models/Models";
 import { connect } from "http2";
 // import userTypes from "../config/userTypes";
-import { body, validationResult } from 'express-validator';
+import { body, validationResult } from "express-validator";
 
 env.config();
 
@@ -121,12 +121,15 @@ export const UsersLogin = async (req = request, res = response) => {
       { expiresIn: "10d" }
     );
 
-    const hashToken = cryptoJs.AES.encrypt(token, process.env.API_SECRET).toString();
+    const hashToken = cryptoJs.AES.encrypt(
+      token,
+      process.env.API_SECRET
+    ).toString();
 
     res.status(200).json({
       success: true,
       token: hashToken,
-      iduser: Usercheck.iduser
+      iduser: Usercheck.iduser,
     });
   } catch (error) {
     res.status(500).json({
@@ -168,7 +171,7 @@ export const UsersRead = async (req = request, res = response) => {
 //      USER READ ONE (for user or admin/moderator)
 export const UserRead = async (req = request, res = response) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     const token = await req.headers["authorization"];
     //deszyfrowanie tokenu JWT
     const decToken = await cryptoJs.AES.decrypt(
@@ -191,14 +194,14 @@ export const UserRead = async (req = request, res = response) => {
       });
     }
     //sprawdzenie czy id z tokenu pokrywa się z id z zapytania
-    if(parseInt(id) !== verify.id){
+    if (parseInt(id) !== verify.id) {
       return res.status(403).json({ error: "Access denied" });
     }
     res.status(200).json({
       success: true,
       message: "Successfully selected user!",
       user: user,
-    })
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -333,7 +336,10 @@ export const UserAuth = async (req = request, res = response) => {
     }
 
     const bearer = token.split(" ")[1];
-    const decToken = cryptoJs.AES.decrypt(bearer, process.env.API_SECRET).toString(cryptoJs.enc.Utf8);
+    const decToken = cryptoJs.AES.decrypt(
+      bearer,
+      process.env.API_SECRET
+    ).toString(cryptoJs.enc.Utf8);
     const verify = jwt.verify(decToken, process.env.API_SECRET);
 
     if (!verify) {
@@ -372,5 +378,21 @@ export const UserAuth = async (req = request, res = response) => {
       success: false,
       error: error.message,
     });
+  }
+};
+
+export const UserTypesRead = async (req = request, res = response) => {
+  try {
+    const user_types = await UserTypesModels.findMany();
+
+    if (!user_types) {
+      return res
+        .status(404)
+        .json({ success: false, error: "user_types not found" });
+    }
+
+    res.status(200).json({ success: true, data: { user_types: user_types } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Internal server error" });
   }
 };

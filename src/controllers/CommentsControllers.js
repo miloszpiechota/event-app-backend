@@ -7,9 +7,6 @@ import { CommentsModels } from "../models/Models"
 env.config()
 
 const salt = bcryptjs.genSaltSync(10)
-// let time = await prisma.time.create({
-//     data: { start: new Date(), end: null, something: 'something' },
-//   })
 
 // Create Comments
 export const CommentsCreate = async (req = request, res = response) => {
@@ -20,7 +17,7 @@ export const CommentsCreate = async (req = request, res = response) => {
             idevent,
             date_comment = new Date(), // Domyślna data
         } = req.body;
-
+        console.log(date_comment);
         // Walidacja danych wejściowych
         if (!comment || !iduser || !idevent) {
             return res.status(400).json({
@@ -34,6 +31,7 @@ export const CommentsCreate = async (req = request, res = response) => {
             data: {
                 comment,
                 date_comment,
+                //date_comment: new Date().toISOString(), //dodałes toISOString podczas testów
                 event: {
                     connect: { idevent: parseInt(idevent) }, // Łączenie z istniejącym wydarzeniem
                 },

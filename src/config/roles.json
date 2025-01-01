@@ -37,7 +37,7 @@
                     "delete"
                 ]
             },
-            "privliges": [
+            "privliges":[
                 "user_panel",
                 "users_manager_panel",
                 "event_creator_panel",
@@ -45,18 +45,34 @@
                 "admin_panel",
                 "event_validate_panel"
             ]
+            
         },
         {
             "name": "user",
             "iduser_type": 1,
             "permissions": {
-                "comments": ["create", "read"],
-                "events": ["read"],
-                "payments": ["create", "read"],
-                "users": ["read_self", "update_self"],
-                "orders": ["create", "read_self", "delete"]
+                "comments": [
+                    "create",
+                    "read"
+                ],
+                "events": [
+                    "read"
+                ],
+                "payments": [
+                    "create",
+                    "read"
+                ],
+                "users": [
+                    "read_self",
+                    "update_self"
+                ],
+                "orders": [
+                    "create",
+                    "read_self",
+                    "delete"
+                ]
             },
-            "privliges": [
+            "privliges":[
                 "user_panel"
             ]
         },
@@ -89,7 +105,7 @@
                     "delete"
                 ]
             },
-            "privliges": [
+            "privliges":[
                 "user_panel",
                 "users_manager_panel",
                 "event_creator_panel",
@@ -122,7 +138,7 @@
                     "update"
                 ]
             },
-            "privliges": [
+            "privliges":[
                 "user_panel",
                 "event_validate_panel"
             ]
@@ -161,7 +177,7 @@
                     "delete"
                 ]
             },
-            "privliges": [
+            "privliges":[
                 "user_panel",
                 "users_manager_panel",
                 "event_creator_panel",
