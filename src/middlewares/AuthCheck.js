@@ -7,8 +7,9 @@ dotenv.config();
 export const authCheck = async (req, res, next) => {
   try {
     // Extract the authorization header from the request
+    console.log(req.headers);
     const token = req.headers["authorization"];
-    console.log("1");
+    console.log("1.1");
     console.log(token);
     // Check if the token exists and starts with "Bearer "
     if (!token || !token.startsWith("Bearer ")) {

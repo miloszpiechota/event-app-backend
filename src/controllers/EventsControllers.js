@@ -205,7 +205,36 @@ export const EventRead = async (req = request, res = response) => {
     });
   }
 };
+// Read Event with details
+export const EventReadDetails = async (req = request, res = response) => {
+  try {
+    const { id } = req.params; // Get the event ID from URL params
+    let readEvents;
 
+    if (id) {
+      // Fetch a specific event by ID if ID is provided
+      readEvents = await EventsModels.findUnique({
+        where: { idevent: parseInt(id) }, // Assuming 'idevent' is the field for event ID
+        include:{
+          event_location: true,
+          event_category: true,
+          comments: true
+        },
+      });
+    } 
+
+    res.status(200).json({
+      success: true,
+      msg: "Successfully read event(s)!",
+      event: readEvents,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
 // update Event
 export const EventUpdate = async (req = request, res = response) => {
   try {

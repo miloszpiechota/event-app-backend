@@ -145,14 +145,17 @@ export const UsersRead = async (req = request, res = response) => {
     const { page = 1, limit = 10 } = await req.query;
     let skip = (page - 1) * limit;
     const { filter } = await req.body;
+    console.log("4");
     const result = await UsersModels.findMany({
       skip: parseInt(skip),
       take: parseInt(limit),
       orderBy: { iduser: "desc" },
       where: filter,
     });
+    console.log("5");
 
     const conn = await UsersModels.count();
+    console.log("6");
 
     res.status(200).json({
       success: true,
