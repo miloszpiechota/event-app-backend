@@ -27,6 +27,7 @@
                     "read",
                     "read_self",
                     "update",
+                    "update_self",
                     "delete"
                 ],
                 "orders": [
@@ -37,7 +38,7 @@
                     "delete"
                 ]
             },
-            "privliges":[
+            "privliges": [
                 "user_panel",
                 "users_manager_panel",
                 "event_creator_panel",
@@ -45,7 +46,6 @@
                 "admin_panel",
                 "event_validate_panel"
             ]
-            
         },
         {
             "name": "user",
@@ -72,7 +72,7 @@
                     "delete"
                 ]
             },
-            "privliges":[
+            "privliges": [
                 "user_panel"
             ]
         },
@@ -105,12 +105,11 @@
                     "delete"
                 ]
             },
-            "privliges":[
+            "privliges": [
                 "user_panel",
                 "users_manager_panel",
                 "event_creator_panel",
                 "event_validate_panel"
-
             ]
         },
         {
@@ -139,7 +138,7 @@
                     "update"
                 ]
             },
-            "privliges":[
+            "privliges": [
                 "user_panel",
                 "event_validate_panel"
             ]
@@ -178,7 +177,7 @@
                     "delete"
                 ]
             },
-            "privliges":[
+            "privliges": [
                 "user_panel",
                 "users_manager_panel",
                 "event_creator_panel",

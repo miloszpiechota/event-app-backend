@@ -9,6 +9,8 @@ const checkPermission = (resource, action) => {
             const rbac = new RBAC();
             if (rbac.can(iduser_type, resource, action)) {
                 console.log("3");
+                console.log(resource);
+                console.log(action);
                 return next(); 
             } else {
                 return res.status(403).json({ error: "Access denied" }); 

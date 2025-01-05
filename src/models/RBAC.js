@@ -27,6 +27,7 @@ class RBAC {
     }
     can(roleName, resource, action) {
         const permissions = this.getPermissions(roleName, resource);
+        console.log(permissions.includes(action));
         return permissions.includes(action);
     }
 }

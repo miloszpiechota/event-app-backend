@@ -229,6 +229,7 @@ export const UsersUpdate = async (req = request, res = response) => {
     } = req.body;
     const { id } = req.params; // Zakładam, że te parametry są przekazywane w URL
 
+    console.log(zipcode);
     // Sprawdzenie, czy użytkownik istnieje
     const checkUniqueId = await UsersModels.findUnique({
       where: {
