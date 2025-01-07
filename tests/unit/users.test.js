@@ -1,20 +1,35 @@
 import { UsersCreate } from "../../src/controllers/UsersControllers.js";
-import { jest } from "@jest/globals";
-//nie dziala
-test("Should return 401 for duplicate email", async () => {
-  const mockFindFirst = jest.fn().mockResolvedValue({ iduser: 1 });
-  jest.mock("../../src/models/Models.js", () => ({
-    UsersModels: { findFirst: mockFindFirst, create: jest.fn() },
-  }));
+import { UsersModels } from "../../src/models/Models.js";
 
-  const req = { body: { email: "test@example.com", password: "password123" } };
-  const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+// Mock the UsersModels
+jest.mock("../../src/models/Models.js", () => ({
+  UsersModels: {
+    findFirst: jest.fn(),
+    create: jest.fn(),
+  },
+}));
 
-  await UsersCreate(req, res);
+describe("UsersCreate Controller", () => {
+  afterEach(() => {
+    jest.clearAllMocks(); // Reset mocks between tests
+  });
 
-  expect(res.status).toHaveBeenCalledWith(401);
-  expect(res.json).toHaveBeenCalledWith({
-    success: false,
-    msg: "email already exist",
+  test("Should return 401 for duplicate email", async () => {
+    // Mock database response for existing email
+    UsersModels.findFirst.mockResolvedValue({ iduser: 1 });
+
+    const req = { body: { email: "admin@example.com", password: "adminadmin" } };
+    const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+    await UsersCreate(req, res);
+
+    expect(UsersModels.findFirst).toHaveBeenCalledWith({
+      where: { email: "admin@example.com" },
+    });
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      msg: "email already exist",
+    });
   });
 });

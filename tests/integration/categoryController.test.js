@@ -1,12 +1,10 @@
 import request from "supertest";
 import app from "../../src/index.js"; 
 
-//ok
+test("Should return 200 for correct category ID", async () => {
+  const response = await request(app).get("/api/categories/read/3");
 
-test("Should return 400 for invalid category ID", async () => {
-  const response = await request(app).get("/api/categories/read/invalid");
-
-  expect(response.status).toBe(400);
-  expect(response.body.success).toBe(false);
+  expect(response.status).toBe(200);
+  expect(response.body.success).toBe(true);
   expect(response.body.error).toBe("Invalid category ID");
 });
