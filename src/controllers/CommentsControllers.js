@@ -17,7 +17,6 @@ export const CommentsCreate = async (req = request, res = response) => {
             idevent,
             date_comment = new Date(), // Domyślna data
         } = req.body;
-        console.log(date_comment);
         // Walidacja danych wejściowych
         if (!comment || !iduser || !idevent) {
             return res.status(400).json({

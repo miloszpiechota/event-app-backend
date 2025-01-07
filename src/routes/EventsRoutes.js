@@ -4,8 +4,6 @@ const event_routes = express.Router()
 import { authCheck } from "../middlewares/AuthCheck"
 const checkPermission = require('../middlewares/checkPermission');
 
-
-
 //      CREATE EVENT ROUTES
 //event_routes.post("/create", authCheck, checkPermission('events', 'create'), EventCreate)
 event_routes.post("/create", EventCreate)

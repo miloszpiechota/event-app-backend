@@ -23,10 +23,11 @@ export const authCheck = async (req, res, next) => {
     const tokenValue = token.split(" ")[1];
 
     // Decrypt the token using CryptoJS
-    const decToken = cryptoJs.AES.decrypt(tokenValue, process.env.API_SECRET).toString(cryptoJs.enc.Utf8);
+    const decToken = cryptoJs.AES.decrypt(tokenValue, process.env.API_SECRET)
+      .toString(cryptoJs.enc.Utf8);
 
     // Verify the decrypted token using JWT
-    const verify = jwt.verify(decToken, process.env.API_SECRET); // Changed to use a separate secret for JWT
+    const verify = jwt.verify(decToken, process.env.API_SECRET); 
 
     // Check if the token has expired
     if (!verify || verify.exp < Math.floor(Date.now() / 1000)) {
@@ -35,11 +36,8 @@ export const authCheck = async (req, res, next) => {
         msg: "Token expired or invalid. Please log in again.",
       });
     }
-
-    // Attach the verified user data to the request object
-    req.user = verify; // You can access user data via req.user in subsequent middlewares/routes
+    req.user = verify; 
     console.log("2");
-
     next(); // Proceed to the next middleware or route handler
   } catch (error) {
     console.error(error);
